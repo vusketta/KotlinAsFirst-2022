@@ -2,6 +2,7 @@
 
 package lesson3.task1
 
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 // Урок 3: циклы
@@ -104,14 +105,8 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var divisor = 0
-    for (i in 2..n) {
-        if (n % i == 0) {
-            divisor = i
-            break
-        }
-    }
-    return divisor
+    for (i in 2..n) if (n % i == 0) return i
+    return 1
 }
 
 /**
@@ -120,14 +115,8 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    var divisor = 1
-    for (i in n / 2 downTo 2) {
-        if (n % i == 0) {
-            divisor = i
-            break
-        }
-    }
-    return divisor
+    for (i in n / 2 downTo 2) if (n % i == 0) return i
+    return 1
 }
 
 /**
@@ -199,10 +188,10 @@ fun revert(n: Int): Int {
     var result = 0
     var number = n
     while (number != 0) {
-        result = (result + number % 10) * 10
+        result = result * 10 + number % 10
         number /= 10
     }
-    return result / 10
+    return result
 }
 
 /**
@@ -214,7 +203,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя (3 балла)
@@ -224,7 +213,8 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean =
+    listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0).filter { digitCountInNumber(n, it) > 0 }.size > 1
 
 /**
  * Средняя (4 балла)
@@ -235,6 +225,8 @@ fun hasDifferentDigits(n: Int): Boolean = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
+fun tailorMember(x: Double, k: Int) = x.pow(k) / factorial(k)
+
 fun sin(x: Double, eps: Double): Double = TODO()
 
 /**
