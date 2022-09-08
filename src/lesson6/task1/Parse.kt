@@ -76,12 +76,12 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String {
-    val monthString = listOf(
-        "января", "февраля", "марта", "апреля", "мая", "июня",
-        "июля", "августа", "сентября", "октября", "ноября", "декабря"
-    )
+val monthString = listOf(
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+)
 
+fun dateStrToDigit(str: String): String {
     if (!str.matches(Regex("""\d* [а-я]* \d*"""))) return ""
 
     val date = str.split(" ")
@@ -104,7 +104,14 @@ fun dateStrToDigit(str: String): String {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    if (!digital.matches(Regex("""\d\d.\d\d.\d{4}"""))) return ""
+
+    val date = digital.split(".").map { it.toInt() }
+    if (date[1] !in 1..12 || daysInMonth(date[1], date[2]) < date[0]) return ""
+
+    return String.format("%d ${monthString[date[1] - 1]} %d", date[0], date[2])
+}
 
 /**
  * Средняя (4 балла)
@@ -120,7 +127,15 @@ fun dateDigitToStr(digital: String): String = TODO()
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun replaceList(string: String, list: List<String>, newValue: String): String {
+    var result = string
+    for (str in list) result = result.replace(str, newValue)
+    return result
+}
+
+fun flattenPhoneNumber(phone: String): String =
+    if (phone.matches(Regex("""(\+\d*)?\s*(\(\d+(\d|-|\s)*\))*\s*(\d|-|\s)*""")))
+        replaceList(phone, listOf(" ", "(", ")", "-"), "") else ""
 
 /**
  * Средняя (5 баллов)
@@ -132,7 +147,15 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun stringToIntList(string: String): List<String> =
+    replaceList(string, listOf("-", "%"), "").replace(Regex("""\s+"""), " ")
+        .split(" ").filter { it.matches(Regex("""\d+""")) }
+
+fun bestLongJump(jumps: String): Int {
+    if (!jumps.matches(Regex("""(\d|\s|-|%)*"""))) return -1
+    val list = stringToIntList(jumps)
+    return if (list.isNotEmpty()) list.map { it.toInt() }.max() else -1
+}
 
 /**
  * Сложная (6 баллов)
@@ -145,7 +168,11 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    if (!jumps.matches(Regex("""(\d|\s|-|%|\+)*""")) || !jumps.contains("+")) return -1
+    val list = stringToIntList(jumps)
+    return if (list.isNotEmpty()) list.map { it.toInt() }.max() else -1
+}
 
 /**
  * Сложная (6 баллов)
@@ -156,7 +183,27 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val list = expression.replace("+", "+ ").replace("-", "- ")
+        .split(Regex("""\s+"""))
+
+    if (list.first() in "+-" || list.last() in "+-") throw IllegalArgumentException()
+
+    var prev = list.first()
+    var result = list.first().toInt()
+    for (i in 1 until list.size) {
+        if (prev in "+-" == list[i] in "+-") throw IllegalArgumentException()
+
+        if (list[i].matches(Regex("""\d+"""))) {
+            val number = list[i].toInt()
+            if (prev == "+") result += number else result -= number
+        }
+
+        prev = list[i]
+    }
+
+    return result
+}
 
 /**
  * Сложная (6 баллов)
