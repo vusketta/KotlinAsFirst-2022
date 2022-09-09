@@ -1,10 +1,8 @@
 package lesson11.task1
 
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
-import java.lang.ArithmeticException
+import org.junit.jupiter.api.Test
 
 internal class UnsignedBigIntegerTest {
 

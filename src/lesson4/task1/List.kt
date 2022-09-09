@@ -3,7 +3,6 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import ru.spbstu.wheels.NullableMonad.map
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -122,7 +121,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double = sqrt(v.map { it.pow(2) }.sum())
+fun abs(v: List<Double>): Double = sqrt(v.sumOf { it.pow(2) })
 
 /**
  * Простая (2 балла)
@@ -241,7 +240,7 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = if (n < base) listOf(n) else listOf(n % base) + convert(n / base, base)
+fun convert(n: Int, base: Int): List<Int> = if (n < base) listOf(n) else convert(n / base, base) + listOf(n % base)
 
 /**
  * Сложная (4 балла)
@@ -254,7 +253,8 @@ fun convert(n: Int, base: Int): List<Int> = if (n < base) listOf(n) else listOf(
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String =
+    convert(n, base).map { if (it in 10..36) ('a'..'z').toList()[it - 10] else it }.joinToString(separator = "")
 
 /**
  * Средняя (3 балла)
@@ -263,7 +263,8 @@ fun convertToString(n: Int, base: Int): String = TODO()
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int = TODO()
+fun decimal(digits: List<Int>, base: Int): Int =
+    digits.mapIndexed { index, i -> i * pow(base, digits.size - index - 1) }.sum()
 
 /**
  * Сложная (4 балла)
@@ -277,7 +278,10 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int = str.split("").filter { it.isNotEmpty() }
+    .map { if (it[0] in ('a'..'z')) ('a'..'z').toList().indexOf(it[0]) + 10 else it.toInt() }
+    .mapIndexed { index, i -> i * pow(base, str.length - index - 1) }.sum()
+
 
 /**
  * Сложная (5 баллов)
@@ -287,24 +291,15 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
+val toRoman = mapOf(
+    1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL", 50 to "L",
+    90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M"
+)
+
 fun roman(n: Int): String {
-    val intToRoman = mapOf(
-        1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL", 50 to "L",
-        90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M"
-    )
-    val module = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    val stringBuilder: StringBuilder = java.lang.StringBuilder()
-    var number = n
-    var index = 0
-    while (number > 0) {
-        if (number - module[index] >= 0) {
-            number -= module[index]
-            stringBuilder.append(intToRoman[module[index]])
-        } else {
-            index++
-        }
-    }
-    return stringBuilder.toString()
+    val key = toRoman.keys.filter { it <= n }.max()
+    val romanDigit = toRoman[key]
+    return if (n == key && romanDigit is String) romanDigit else romanDigit + roman(n - key)
 }
 
 /**

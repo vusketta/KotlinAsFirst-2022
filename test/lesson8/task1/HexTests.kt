@@ -4,7 +4,6 @@ import lesson8.task1.Direction.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 
 class HexTests {
 

@@ -2,6 +2,9 @@
 
 package lesson3.task1
 
+import lesson1.task1.sqr
+import lesson4.task1.pow
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -77,7 +80,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
 fun digitNumber(n: Int): Int {
     var countOfDigits = 0
     for (i in 0..9) {
-        countOfDigits += abs(digitCountInNumber(-n, i))
+        countOfDigits += abs(digitCountInNumber(abs(n), i))
     }
     return countOfDigits
 }
@@ -89,8 +92,7 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var a = 0
-    var b = 1
+    var (a, b) = listOf(0, 1)
     var c: Int
     repeat(n) {
         c = b
@@ -214,7 +216,7 @@ fun isPalindrome(n: Int): Boolean = n == revert(n)
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun hasDifferentDigits(n: Int): Boolean =
-    listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0).filter { digitCountInNumber(n, it) > 0 }.size > 1
+    (0..9).toList().filter { digitCountInNumber(n, it) > 0 }.size > 1
 
 /**
  * Средняя (4 балла)
@@ -225,9 +227,20 @@ fun hasDifferentDigits(n: Int): Boolean =
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun tailorMember(x: Double, k: Int) = x.pow(k) / factorial(k)
+fun tailorMember(x: Double, k: Int): Double = (-1.0).pow(k / 2) * x.pow(k) / factorial(k)
 
-fun sin(x: Double, eps: Double): Double = TODO()
+fun tailorSeries(x: Double, eps: Double, term: Int): Double {
+    var k = 0
+    var sum = 0.0
+    var member = tailorMember(x % (2 * PI), term)
+    while (abs(member) >= eps) {
+        sum += member
+        member = tailorMember(x % (2 * PI), 2 * ++k + term)
+    }
+    return sum
+}
+
+fun sin(x: Double, eps: Double): Double = tailorSeries(x, eps, 1)
 
 /**
  * Средняя (4 балла)
@@ -238,7 +251,7 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double = tailorSeries(x, eps, 0)
 
 /**
  * Сложная (4 балла)
@@ -249,7 +262,16 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun funSeguenceDigit(n: Int, func: (n: Int) -> Int): Int {
+    var (digitsSkipped, i) = listOf(0, 0)
+    while (digitsSkipped < n) {
+        i++
+        digitsSkipped += digitNumber(func(i))
+    }
+    return func(i) / pow(10, digitsSkipped - n) % 10
+}
+
+fun squareSequenceDigit(n: Int): Int = funSeguenceDigit(n, ::sqr)
 
 /**
  * Сложная (5 баллов)
@@ -260,4 +282,4 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int = funSeguenceDigit(n, ::fib)
