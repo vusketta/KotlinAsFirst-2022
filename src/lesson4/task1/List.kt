@@ -297,9 +297,9 @@ val toRoman = mapOf(
 )
 
 fun roman(n: Int): String {
-    val key = toRoman.keys.filter { it <= n }.max()
+    val key = toRoman.keys.filter { it <= n }.maxOrNull()
     val romanDigit = toRoman[key]
-    return if (n == key && romanDigit is String) romanDigit else romanDigit + roman(n - key)
+    return if (n == key && romanDigit is String) romanDigit else romanDigit + roman(n - key!!)
 }
 
 /**

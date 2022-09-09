@@ -111,7 +111,7 @@ data class Segment(val begin: Point, val end: Point) {
  * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
-fun diameter(vararg points: Point): Segment {
+fun diameter(vararg points: Point): Segment? {
     if (points.size < 2) throw IllegalArgumentException()
 
     val map = mutableMapOf<Double, Pair<Point, Point>>()
@@ -121,8 +121,9 @@ fun diameter(vararg points: Point): Segment {
         }
     }
 
-    val pair = map.maxBy { it.key }.value
-    return Segment(pair.first, pair.second)
+    val pair = map.maxByOrNull { it.key }?.value
+
+    return if (pair != null) Segment(pair.first, pair.second) else null
 }
 
 /**
