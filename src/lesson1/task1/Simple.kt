@@ -1,6 +1,7 @@
 package lesson1.task1
 
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.sqrt
 
 // Урок 1: простые функции
 // Максимальное количество баллов = 5
@@ -110,7 +111,7 @@ fun thirdDigit(number: Int): Int = (number / 100) % 10
  * Определите время поезда в пути в минутах (в данном случае 216).
  */
 fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int =
-    (60 * hoursArrive + minutesArrive) - (60 * hoursDepart + minutesDepart)
+    60 * hoursArrive + minutesArrive - (60 * hoursDepart + minutesDepart)
 
 /**
  * Простая (2 балла)

@@ -2,6 +2,7 @@
 
 package lesson3.task1
 
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -76,7 +77,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
 fun digitNumber(n: Int): Int {
     var countOfDigits = 0
     for (i in 0..9) {
-        countOfDigits += digitCountInNumber(n, i)
+        countOfDigits += abs(digitCountInNumber(-n, i))
     }
     return countOfDigits
 }
@@ -185,8 +186,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var result = 0
-    var number = n
+    var (result, number) = listOf(0, n)
     while (number != 0) {
         result = result * 10 + number % 10
         number /= 10

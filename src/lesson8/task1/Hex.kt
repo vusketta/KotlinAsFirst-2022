@@ -2,6 +2,8 @@
 
 package lesson8.task1
 
+import kotlin.math.abs
+
 /**
  * Точка (гекс) на шестиугольной сетке.
  * Координаты заданы как в примере (первая цифра - y, вторая цифра - x)
@@ -36,7 +38,9 @@ data class HexPoint(val x: Int, val y: Int) {
      * Расстояние вычисляется как число единичных отрезков в пути между двумя гексами.
      * Например, путь межу гексами 16 и 41 (см. выше) может проходить через 25, 34, 43 и 42 и имеет длину 5.
      */
-    fun distance(other: HexPoint): Int = TODO()
+    fun distance(other: HexPoint): Int = maxOf(
+        abs(x - other.x), abs(y - other.y), abs((x + y) - (other.x + other.y))
+    )
 
     override fun toString(): String = "$y.$x"
 }
@@ -56,7 +60,7 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * или 0, если шестиугольники имеют общую точку.
      *
      * Например, расстояние между шестиугольником A с центром в 31 и радиусом 1
-     * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
+     * и другим шестиугольником B с центром в 26 и радиусом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
     fun distance(other: Hexagon): Int = TODO()
@@ -66,7 +70,7 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      *
      * Вернуть true, если заданная точка находится внутри или на границе шестиугольника
      */
-    fun contains(point: HexPoint): Boolean = TODO()
+    fun contains(point: HexPoint): Boolean = center.distance(point) <= radius
 }
 
 /**
@@ -119,7 +123,15 @@ enum class Direction {
      * Вернуть направление, противоположное данному.
      * Для INCORRECT вернуть INCORRECT
      */
-    fun opposite(): Direction = TODO()
+    fun opposite(): Direction = when (this) {
+        RIGHT -> LEFT
+        UP_RIGHT -> DOWN_LEFT
+        UP_LEFT -> DOWN_RIGHT
+        LEFT -> RIGHT
+        DOWN_LEFT -> UP_RIGHT
+        DOWN_RIGHT -> UP_LEFT
+        INCORRECT -> INCORRECT
+    }
 
     /**
      * Средняя (3 балла)
@@ -131,7 +143,7 @@ enum class Direction {
      * Для направления INCORRECT бросить исключение IllegalArgumentException.
      * При решении этой задачи попробуйте обойтись без перечисления всех семи вариантов.
      */
-    fun next(): Direction = TODO()
+    fun next(): Direction = if (this == INCORRECT) throw IllegalArgumentException() else values()[this.ordinal + 1]
 
     /**
      * Простая (2 балла)
@@ -139,7 +151,8 @@ enum class Direction {
      * Вернуть true, если данное направление совпадает с other или противоположно ему.
      * INCORRECT не параллельно никакому направлению, в том числе другому INCORRECT.
      */
-    fun isParallel(other: Direction): Boolean = TODO()
+    fun isParallel(other: Direction): Boolean = if (INCORRECT in listOf(this, other)) false else
+        this in listOf(other, other.opposite())
 }
 
 /**
