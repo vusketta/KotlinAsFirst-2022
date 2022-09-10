@@ -110,7 +110,7 @@ fun dateDigitToStr(digital: String): String {
     val date = digital.split(".").map { it.toInt() }
     if (date[1] !in 1..12 || daysInMonth(date[1], date[2]) < date[0]) return ""
 
-    return String.format("%d ${monthString[date[1] - 1]} %d", date[0], date[2])
+    return "${date[0]} ${monthString[date[1] - 1]} $date[2]"
 }
 
 /**
@@ -135,7 +135,8 @@ fun replaceList(string: String, list: List<String>, newValue: String): String {
 
 fun flattenPhoneNumber(phone: String): String =
     if (phone.matches(Regex("""(\+\d*)?\s*(\(\d+(\d|-|\s)*\))*\s*(\d|-|\s)*""")))
-        replaceList(phone, listOf(" ", "(", ")", "-"), "") else ""
+        replaceList(phone, listOf(" ", "(", ")", "-"), "")
+            .replace(Regex("""\s"""), "") else ""
 
 /**
  * Средняя (5 баллов)

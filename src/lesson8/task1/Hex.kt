@@ -143,7 +143,8 @@ enum class Direction {
      * Для направления INCORRECT бросить исключение IllegalArgumentException.
      * При решении этой задачи попробуйте обойтись без перечисления всех семи вариантов.
      */
-    fun next(): Direction = if (this == INCORRECT) throw IllegalArgumentException() else values()[this.ordinal + 1]
+    fun next(): Direction =
+        if (this == INCORRECT) throw IllegalArgumentException() else values()[(this.ordinal + 1) % 6]
 
     /**
      * Простая (2 балла)
