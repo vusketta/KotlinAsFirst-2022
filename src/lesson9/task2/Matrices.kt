@@ -60,7 +60,39 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    val matrix = createMatrix(height, width, 0)
+    var (l, r, u, d) = listOf(0, width - 1, 0, height - 1)
+    var value = 1
+
+    while (true) {
+        if (l > r) break
+        for (i in l..r) {
+            matrix[u, i] = value++
+        }
+        u++
+
+        if (u > d) break
+        for (i in u..d) {
+            matrix[i, r] = value++
+        }
+        r--
+
+        if (l > r) break
+        for (i in r downTo l) {
+            matrix[d, i] = value++
+        }
+        d--
+
+        if (u > d) break
+        for (i in d downTo u) {
+            matrix[i, l] = value++
+        }
+        l++
+    }
+
+    return matrix
+}
 
 /**
  * Сложная (5 баллов)
@@ -76,7 +108,40 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
  *  1  2  2  2  2  1
  *  1  1  1  1  1  1
  */
-fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateRectangles(height: Int, width: Int): Matrix<Int> {
+    val matrix = createMatrix(height, width, 0)
+    var (l, r, u, d) = listOf(0, width - 1, 0, height - 1)
+    var value = 0
+
+    while (true) {
+        value++
+        if (l > r) break
+        for (i in l..r) {
+            matrix[u, i] = value
+        }
+        u++
+
+        if (u > d) break
+        for (i in u..d) {
+            matrix[i, r] = value
+        }
+        r--
+
+        if (l > r) break
+        for (i in r downTo l) {
+            matrix[d, i] = value
+        }
+        d--
+
+        if (u > d) break
+        for (i in d downTo u) {
+            matrix[i, l] = value
+        }
+        l++
+    }
+
+    return matrix
+}
 
 /**
  * Сложная (5 баллов)
@@ -119,7 +184,17 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  * 1 2 3
  * 3 1 2
  */
-fun isLatinSquare(matrix: Matrix<Int>): Boolean = TODO()
+fun isLatinSquare(matrix: Matrix<Int>): Boolean {
+    if (matrix.height != matrix.width) return false
+
+    for (i in 0 until matrix.height)
+        if (!matrix.getRow(i).containsAll((1..matrix.height).toList())) return false
+
+    for (i in 0 until matrix.width)
+        if (!matrix.getColumn(i).containsAll((1..matrix.width).toList())) return false
+
+    return true
+}
 
 /**
  * Средняя (3 балла)
@@ -155,7 +230,18 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * 0 0 1 0
  * 0 0 0 0
  */
-fun findHoles(matrix: Matrix<Int>): Holes = TODO()
+fun findHoles(matrix: Matrix<Int>): Holes {
+    val rows: MutableList<Int> = mutableListOf()
+    val columns: MutableList<Int> = mutableListOf()
+
+    for (i in 0 until matrix.height)
+        if (!matrix.getRow(i).contains(1)) rows.add(i)
+
+    for (i in 0 until matrix.width)
+        if (!matrix.getColumn(i).contains(1)) columns.add(i)
+
+    return Holes(rows, columns)
+}
 
 /**
  * Класс для описания местонахождения "дырок" в матрице
