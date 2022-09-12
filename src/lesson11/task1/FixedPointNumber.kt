@@ -96,4 +96,7 @@ class FixedPointNumber : Comparable<FixedPointNumber> {
      * Преобразование к вещественному числу
      */
     fun toDouble(): Double = TODO()
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }

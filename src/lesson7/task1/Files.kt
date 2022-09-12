@@ -321,7 +321,31 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    fun String.parseMarkdown(): String {
+        val markdownToHTML = mapOf("**" to "b", "*" to "i", "~~" to "s")
+        var temp = this
+        markdownToHTML.forEach { (k, v) ->
+            while (temp.contains(k)) {
+                val start = temp.indexOf(k)
+                val end = temp.indexOf(k, start + k.length)
+                if (end == -1) break
+                temp = temp.substring(0, start) + "<$v>" + temp.substring(start + k.length, end) + "</$v>" +
+                        temp.substring(end + k.length, temp.length)
+            }
+        }
+        return temp
+    }
+
+    val lines = File(inputName).readText().split(System.lineSeparator() + System.lineSeparator())
+    writer.write("<html><body>")
+    lines.forEach {
+        writer.write("<p>")
+        writer.write(it.parseMarkdown())
+        writer.write("</p>")
+    }
+    writer.write("</body></html>")
+    writer.close()
 }
 
 /**

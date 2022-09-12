@@ -2,7 +2,10 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -108,7 +111,8 @@ fun timeForHalfWay(
  * и 3, если угроза от обеих ладей.
  * Считать, что ладьи не могут загораживать друг друга
  */
-fun rookMove(firstX: Int, firstY: Int, secondX: Int, secondY: Int): Boolean = (firstX == secondX) || (firstY == secondY)
+fun rookMove(firstX: Int, firstY: Int, secondX: Int, secondY: Int): Boolean =
+    firstX == secondX || firstY == secondY
 
 fun whichRookThreatens(
     kingX: Int, kingY: Int,
@@ -183,12 +187,8 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    return if (a > d || c > b) {
-        -1
-    } else if (a in c..d) {
-        min(b, d) - a
-    } else {
-        min(b, d) - c
-    }
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
+    a > d || c > b -> -1
+    a in c..d -> min(b, d) - a
+    else -> min(b, d) - c
 }

@@ -2,6 +2,9 @@
 
 package lesson11.task1
 
+import kotlin.math.max
+import kotlin.math.pow
+
 /**
  * Класс "полином с вещественными коэффициентами".
  *
@@ -20,16 +23,26 @@ package lesson11.task1
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
 class Polynom(vararg coeffs: Double) {
+    private val data: MutableList<Double>
+
+    init {
+        val nonZeroIndex = coeffs.indexOfFirst { it != 0.0 }
+        data = coeffs.asList().subList(
+            if (nonZeroIndex == -1) 0 else nonZeroIndex, coeffs.size
+        ).reversed().toMutableList()
+        if (data.isEmpty()) data.add(0.0)
+    }
 
     /**
      * Геттер: вернуть значение коэффициента при x^i
      */
-    fun coeff(i: Int): Double = TODO()
+    fun coeff(i: Int): Double = data.getOrNull(i) ?: throw NoSuchElementException()
 
     /**
      * Расчёт значения при заданном x
      */
-    fun getValue(x: Double): Double = TODO()
+    fun getValue(x: Double): Double = List(data.size) { x }
+        .mapIndexed { index, d -> coeff(index) * d.pow(index) }.sum()
 
     /**
      * Степень (максимальная степень x при ненулевом слагаемом, например 2 для x^2+x+1).
@@ -38,27 +51,43 @@ class Polynom(vararg coeffs: Double) {
      * Слагаемые с нулевыми коэффициентами игнорировать, т.е.
      * степень 0x^2+0x+2 также равна 0.
      */
-    fun degree(): Int = TODO()
+    fun degree(): Int = max(0, data.size - 1)
 
     /**
      * Сложение
      */
-    operator fun plus(other: Polynom): Polynom = TODO()
+    operator fun plus(other: Polynom): Polynom = Polynom(
+        *DoubleArray(maxOf(this.data.size, other.data.size)) {
+            this.data.getOrElse(it) { 0.0 } + other.data.getOrElse(it) { 0.0 }
+        }.reversedArray()
+    )
 
     /**
      * Смена знака (при всех слагаемых)
      */
-    operator fun unaryMinus(): Polynom = TODO()
+    operator fun unaryMinus(): Polynom = Polynom(
+        *DoubleArray(this.data.size) {
+            -this.data[it]
+        }.reversedArray()
+    )
 
     /**
      * Вычитание
      */
-    operator fun minus(other: Polynom): Polynom = TODO()
+    operator fun minus(other: Polynom): Polynom = Polynom(
+        *DoubleArray(maxOf(this.data.size, other.data.size)) {
+            this.data.getOrElse(it) { 0.0 } - other.data.getOrElse(it) { 0.0 }
+        }.reversedArray()
+    )
 
     /**
      * Умножение
      */
-    operator fun times(other: Polynom): Polynom = TODO()
+    operator fun times(other: Polynom): Polynom = Polynom(
+        *DoubleArray(maxOf(this.data.size, other.data.size)) {
+            this.data.getOrElse(it) { 0.0 } * other.data.getOrElse(it) { 0.0 }
+        }.reversedArray()
+    )
 
     /**
      * Деление

@@ -156,17 +156,11 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun gcd(m: Int, n: Int): Int {
-    var a = m
-    var b = n
-    while (a != b) {
-        if (a > b) {
-            a -= b
-        } else {
-            b -= a
-        }
-    }
-    return a
+tailrec fun gcd(a: Int, b: Int): Int = when {
+    a == b || b == 0 -> a
+    a == 0 -> b
+    a > b -> gcd(a % b, b)
+    else -> gcd(a, b % a)
 }
 
 fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
