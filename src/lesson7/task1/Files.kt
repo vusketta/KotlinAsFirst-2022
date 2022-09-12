@@ -337,7 +337,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         return temp
     }
 
-    val lines = File(inputName).readText().split(System.lineSeparator() + System.lineSeparator())
+    val lines = File(inputName).readText().split(Regex("""((\n|\r){2}){2}"""))
     writer.write("<html><body>")
     lines.forEach {
         writer.write("<p>")
