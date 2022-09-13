@@ -345,7 +345,8 @@ fun russian(n: Int): String {
         result.add(russianTriple(thousands, false))
         when {
             result[0].endsWith("одна") -> thousandsEnding = "а"
-            result[0].endsWith("две") || result[0].endsWith("три") -> thousandsEnding = "и"
+            result[0].endsWith("две") || result[0].endsWith("три")
+                    || result[0].endsWith("четыре") -> thousandsEnding = "и"
         }
         result.add("тысяч$thousandsEnding")
     }
