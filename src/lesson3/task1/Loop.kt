@@ -254,8 +254,7 @@ fun cos(x: Double, eps: Double): Double = tailorSeries(x, eps, 0)
 fun funSeguenceDigit(n: Int, func: (n: Int) -> Int): Int {
     var (digitsSkipped, i) = listOf(0, 0)
     while (digitsSkipped < n) {
-        digitsSkipped += digitNumber(func(i))
-        i++
+        digitsSkipped += digitNumber(func(++i))
     }
     return func(i) / pow(10, digitsSkipped - n) % 10
 }
