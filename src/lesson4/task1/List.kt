@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
-
 package lesson4.task1
 
 import lesson1.task1.discriminant
@@ -140,12 +138,7 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
     if (list.isEmpty()) return list
-
-    val meanOfList = list.sum() / list.size
-    for (i in 0 until list.size) {
-        list[i] -= meanOfList
-    }
-    return list
+    return list.mapTo(list) { it - mean(list) }
 }
 
 /**
@@ -309,4 +302,50 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun russian(n: Int): String {
+    val result = mutableListOf<String>()
+    val thousands = n / 1000
+
+    fun russianTriple(n: Int, isMaleForm: Boolean = true): String {
+        val oneTwo = listOf(listOf("один", "одна"), listOf("два", "две"))
+        val digits = listOf("три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+        val teens = listOf(
+            "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать",
+            "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"
+        )
+        val tens = listOf(
+            "двадцать", "тридцать", "сорок", "пятьдесят",
+            "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
+        )
+        val hundreds = listOf(
+            "сто", "двести", "триста", "четыреста", "пятьсот",
+            "шестьсот", "семьсот", "восемьсот", "девятьсот"
+        )
+        val words = mutableListOf<String>()
+        if (n > 99) words.add(hundreds[n / 100 - 1])
+        when {
+            n % 100 in 11..19 -> words.add(teens[n % 100 - 10])
+            n % 100 in 3..9 -> words.add(digits[n % 100 - 3])
+            else -> {
+                if (n % 100 in 20..99) words.add(tens[n % 100 / 10 - 2])
+                if (n % 10 in 3..9) words.add(digits[n % 10 - 3])
+                if (n % 10 in 1..2 && isMaleForm) words.add(oneTwo[n % 10 - 1][0])
+                if (n % 10 in 1..2 && !isMaleForm) words.add(oneTwo[n % 10 - 1][1])
+            }
+        }
+        return words.joinToString(separator = " ")
+    }
+
+    if (thousands > 0) {
+        var thousandsEnding = ""
+        result.add(russianTriple(thousands, false))
+        when {
+            result[0].endsWith("одна") -> thousandsEnding = "а"
+            result[0].endsWith("две") -> thousandsEnding = "и"
+        }
+        result.add("тысяч$thousandsEnding")
+    }
+    if (n % 1000 > 0) result.add(russianTriple(n % 1000))
+
+    return result.joinToString(separator = " ").trim()
+}

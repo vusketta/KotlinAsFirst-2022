@@ -30,7 +30,7 @@ class OpenHashSet<T>(val capacity: Int) {
     /**
      * Признак пустоты
      */
-    fun isEmpty(): Boolean = TODO()
+    fun isEmpty(): Boolean = size == 0
 
     /**
      * Добавление элемента.

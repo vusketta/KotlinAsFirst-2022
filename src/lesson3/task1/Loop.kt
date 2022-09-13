@@ -4,10 +4,7 @@ package lesson3.task1
 
 import lesson1.task1.sqr
 import lesson4.task1.pow
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -79,9 +76,11 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  */
 fun digitNumber(n: Int): Int {
     var countOfDigits = 0
-    for (i in 0..9) {
-        countOfDigits += abs(digitCountInNumber(abs(n), i))
-    }
+    var number = abs(n)
+    do {
+        number /= 10
+        countOfDigits++
+    } while (number != 0)
     return countOfDigits
 }
 
@@ -108,8 +107,8 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (i in 2..n) if (n % i == 0) return i
-    return 1
+    for (i in 2..floor(sqrt(n.toDouble())).toInt()) if (n % i == 0) return i
+    return n
 }
 
 /**
@@ -117,10 +116,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    for (i in n / 2 downTo 2) if (n % i == 0) return i
-    return 1
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая (2 балла)
@@ -209,8 +205,7 @@ fun isPalindrome(n: Int): Boolean = n == revert(n)
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean =
-    (0..9).toList().filter { digitCountInNumber(n, it) > 0 }.size > 1
+fun hasDifferentDigits(n: Int): Boolean = digitCountInNumber(n, n % 10) != digitNumber(n)
 
 /**
  * Средняя (4 балла)
@@ -259,8 +254,8 @@ fun cos(x: Double, eps: Double): Double = tailorSeries(x, eps, 0)
 fun funSeguenceDigit(n: Int, func: (n: Int) -> Int): Int {
     var (digitsSkipped, i) = listOf(0, 0)
     while (digitsSkipped < n) {
-        i++
         digitsSkipped += digitNumber(func(i))
+        i++
     }
     return func(i) / pow(10, digitsSkipped - n) % 10
 }
