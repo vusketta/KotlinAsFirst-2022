@@ -138,7 +138,11 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
     if (list.isEmpty()) return list
-    return list.mapTo(list) { it - mean(list) }
+    val meanOfList = mean(list)
+    for (i in 0 until list.size) {
+        list[i] -= meanOfList
+    }
+    return list
 }
 
 /**
@@ -341,7 +345,7 @@ fun russian(n: Int): String {
         result.add(russianTriple(thousands, false))
         when {
             result[0].endsWith("одна") -> thousandsEnding = "а"
-            result[0].endsWith("две") -> thousandsEnding = "и"
+            result[0].endsWith("две") || result[0].endsWith("три") -> thousandsEnding = "и"
         }
         result.add("тысяч$thousandsEnding")
     }
