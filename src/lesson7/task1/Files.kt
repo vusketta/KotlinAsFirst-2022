@@ -343,7 +343,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     writer.write("<html><body>")
     writer.write("<p>")
     for (i in 0 until lines.size) {
-        if (lines[i].isEmpty() && i != lines.size - 1) writer.write("</p><p>") else writer.write(lines[i])
+        if (lines[i].isBlank() && i != lines.size - 1) writer.write("</p><p>") else writer.write(lines[i])
     }
     writer.write("</p>")
     writer.write("</body></html>")
