@@ -328,7 +328,7 @@ fun russian(n: Int): String {
         val words = mutableListOf<String>()
         if (n > 99) words.add(hundreds[n / 100 - 1])
         when {
-            n % 100 in 11..19 -> words.add(teens[n % 100 - 10])
+            n % 100 in 10..19 -> words.add(teens[n % 100 - 10])
             n % 100 in 3..9 -> words.add(digits[n % 100 - 3])
             else -> {
                 if (n % 100 in 20..99) words.add(tens[n % 100 / 10 - 2])

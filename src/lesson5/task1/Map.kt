@@ -269,7 +269,18 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val keys = mutableSetOf<String>()
+    val map = mutableMapOf<String, Set<String>>()
+    friends.forEach { (k, v) ->
+        keys.addAll(v)
+        keys.add(k)
+    }
+    keys.forEach { k ->
+        friends[k]?.let { map.put(k, it) }
+    }
+    return map
+}
 
 /**
  * Сложная (6 баллов)
@@ -322,4 +333,26 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val bag = Array<IntArray>(treasures.size) { IntArray(capacity) }
+    val weights = treasures.map { it.value.first }
+    val prices = treasures.map { it.value.second }
+    val goods = treasures.map { it.key }
+    for (i in 1 until treasures.size) {
+        for (j in 1 until capacity) {
+            if (weights[i - 1] <= j)
+                bag[i][j] = maxOf(prices[i - 1] + bag[i - 1][j - weights[i - 1]], bag[i - 1][j])
+            else bag[i][j] = bag[i - 1][j]
+        }
+    }
+
+    val set = mutableSetOf<String>()
+    var sum = capacity - 1
+    for (i in (treasures.size - 1) downTo 1) {
+        if (bag[i][sum] != bag[i - 1][sum]) {
+            set.add(goods[i - 1])
+            sum -= weights[i - 1]
+        }
+    }
+    return set
+}

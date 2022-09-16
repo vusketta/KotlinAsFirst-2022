@@ -88,17 +88,24 @@ fun deleteMarked(inputName: String, outputName: String) {
  */
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    val map = mutableMapOf<String, Int>()
-    for (str in substrings) map[str] = 0
-
-    val lines = File(inputName).readText().split(Regex("""\s+"""))
-    for (line in lines) {
-        for (str in substrings) {
-            if (!line.contains(str, ignoreCase = true)) continue
-            map[str] = map[str]!! + line.split(str).size - 1
+    fun countMatches(string: String, substring: String): Int = when {
+        string.isEmpty() || substring.isEmpty() || string.length < substring.length -> 0
+        string == substring -> 1
+        else -> {
+            var count = 0
+            for (i in 0..string.length - substring.length) {
+                if (string.substring(i, i + substring.length) == substring) count++
+            }
+            count
         }
     }
-    return map
+
+    val text = File(inputName).readText().lowercase()
+    val map = mutableMapOf<String, Int>()
+    substrings.forEach {
+        map.put(it, countMatches(text, it.lowercase()))
+    }
+    return map.toMap()
 }
 
 /**
@@ -115,7 +122,25 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val sibilants = setOf("ж", "ч", "ш", "щ")
+    val grammar = mapOf('ы' to 'и', 'я' to 'а', 'ю' to 'у')
+
+    File(inputName).forEachLine { line ->
+        val stringBuilder = StringBuilder()
+        for (i in 0 until line.length - 1) {
+            if (line[i].lowercase() in sibilants && line[i + 1].lowercaseChar() in grammar.keys) {
+                if (line[i].isUpperCase()) {
+                    stringBuilder.append(grammar[line[i]]?.uppercase())
+                } else {
+                    stringBuilder.append(grammar[line[i]])
+                }
+            }
+        }
+        writer.write(stringBuilder.toString() + System.lineSeparator())
+    }
+
+    writer.close()
 }
 
 /**
@@ -270,7 +295,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     var maxLength = 0
     list.forEach { maxLength = max(maxLength, it.lowercase().toSet().size) }
 
-    writer.write(list.filter { it.lowercase().toSet().size == maxLength }.joinToString(separator = ", "))
+    writer.write(list.filter { it.lowercase().toSet().size == maxLength }.joinToString())
 
     writer.close()
 }
@@ -337,13 +362,17 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         return temp
     }
 
-    val lines = File(inputName).readText().split(Regex("""((\n|\r){2}){2}"""))
+    val lines = File(inputName).readLines()
     writer.write("<html><body>")
+    writer.write("<p>")
     lines.forEach {
-        writer.write("<p>")
+        if (it.isBlank()) {
+            writer.write("</p>")
+            writer.write("<p>")
+        }
         writer.write(it.parseMarkdown())
-        writer.write("</p>")
     }
+    writer.write("</p>")
     writer.write("</body></html>")
     writer.close()
 }
