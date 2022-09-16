@@ -274,3 +274,4 @@ fun squareSequenceDigit(n: Int): Int = funSeguenceDigit(n, ::sqr)
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int = funSeguenceDigit(n, ::fib)
+
