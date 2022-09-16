@@ -338,20 +338,14 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         }
         return temp
     }
-    val lines = File(inputName).readText().parseMarkdown().lines()
-    var isPrevEmpty = false
+
+    val lines = File(inputName).readText().split(Regex("""(\n|\r\n){2,}"""))
     writer.write("<html><body>")
-    writer.write("<p>")
-    for (i in 0 until lines.size) {
-        if (!isPrevEmpty && lines[i].isBlank() && i != lines.size - 1) {
-            writer.write("</p><p>")
-            isPrevEmpty = true
-        } else {
-            writer.write(lines[i])
-            isPrevEmpty = false
-        }
+    lines.forEach {
+        writer.write("<p>")
+        writer.write(it.parseMarkdown())
+        writer.write("</p>")
     }
-    writer.write("</p>")
     writer.write("</body></html>")
     writer.close()
 }
