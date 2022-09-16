@@ -65,7 +65,6 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  */
 fun deleteMarked(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-
     File(inputName).forEachLine { line ->
         when {
             line.isEmpty() -> writer.write(System.lineSeparator())
@@ -99,7 +98,6 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
             count
         }
     }
-
     val text = File(inputName).readText().lowercase()
     val map = mutableMapOf<String, Int>()
     substrings.forEach {
@@ -122,25 +120,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    val sibilants = setOf("ж", "ч", "ш", "щ")
-    val grammar = mapOf('ы' to 'и', 'я' to 'а', 'ю' to 'у')
-
-    File(inputName).forEachLine { line ->
-        val stringBuilder = StringBuilder()
-        for (i in 0 until line.length - 1) {
-            if (line[i].lowercase() in sibilants && line[i + 1].lowercaseChar() in grammar.keys) {
-                if (line[i].isUpperCase()) {
-                    stringBuilder.append(grammar[line[i]]?.uppercase())
-                } else {
-                    stringBuilder.append(grammar[line[i]])
-                }
-            }
-        }
-        writer.write(stringBuilder.toString() + System.lineSeparator())
-    }
-
-    writer.close()
+    TODO()
 }
 
 /**
@@ -253,15 +233,7 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-
-    File(inputName).forEachLine { line ->
-        var lineReplace = line
-        dictionary.onEach { (k, v) -> lineReplace = lineReplace.replace(k.toString(), v, ignoreCase = true) }
-        writer.write(lineReplace + System.lineSeparator())
-    }
-
-    writer.close()
+    TODO()
 }
 
 /**
@@ -291,12 +263,17 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     val list = File(inputName).readLines()
-
     var maxLength = 0
-    list.forEach { maxLength = max(maxLength, it.lowercase().toSet().size) }
-
-    writer.write(list.filter { it.lowercase().toSet().size == maxLength }.joinToString())
-
+    list.filter {
+        it.lowercase().toSet().size == it.length
+    }.forEach {
+        maxLength = max(maxLength, it.lowercase().toSet().size)
+    }
+    writer.write(
+        list.filter {
+            it.lowercase().toSet().size == maxLength && maxLength == it.length
+        }.joinToString()
+    )
     writer.close()
 }
 

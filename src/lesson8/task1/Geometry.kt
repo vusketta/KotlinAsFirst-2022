@@ -4,7 +4,10 @@ package lesson8.task1
 
 import lesson1.task1.sqr
 import lesson4.task1.mean
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
@@ -80,11 +83,7 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    private fun isIntersect(other: Circle): Boolean = abs(radius - other.radius) <= center.distance(other.center)
-            && center.distance(other.center) <= radius + other.radius
-
-    fun distance(other: Circle): Double =
-        if (isIntersect(other)) 0.0 else center.distance(other.center) - (radius + other.radius)
+    fun distance(other: Circle): Double = TODO()
 
     /**
      * Тривиальная (1 балл)
@@ -156,9 +155,7 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Найти точку пересечения с другой линией.
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
-    fun crossPoint(other: Line): Point = Point(
-        (b - other.b) / (other.angle - angle), (b * other.angle - other.b * angle) / (other.angle - angle)
-    )
+    fun crossPoint(other: Line): Point = TODO()
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
 

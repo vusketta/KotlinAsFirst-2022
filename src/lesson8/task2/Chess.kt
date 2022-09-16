@@ -2,7 +2,6 @@
 
 package lesson8.task2
 
-import lesson2.task1.bishopMove
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -122,13 +121,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
  * Примеры: bishopMoveNumber(Square(3, 1), Square(6, 3)) = -1; bishopMoveNumber(Square(3, 1), Square(3, 7)) = 2.
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
-fun bishopMoveNumber(start: Square, end: Square): Int = when {
-    !start.inside() || !end.inside() -> throw IllegalArgumentException()
-    start == end -> 0
-    !bishopMove(start.column, start.row, end.column, end.row) -> -1
-    TODO() -> 1
-    else -> 2
-}
+fun bishopMoveNumber(start: Square, end: Square): Int = TODO()
 
 /**
  * Сложная (5 баллов)
