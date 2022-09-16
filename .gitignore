@@ -16,3 +16,5 @@ report/*
 *.ipr
 *.iws
 *.zip
+*.txt
+*.html
