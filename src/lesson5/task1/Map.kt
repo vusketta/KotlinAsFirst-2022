@@ -270,18 +270,7 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
-    val keys = mutableSetOf<String>()
-    val map = mutableMapOf<String, Set<String>>()
-    friends.forEach { (k, v) ->
-        keys.addAll(v)
-        keys.add(k)
-    }
-    keys.forEach { k ->
-        friends[k]?.let { map.put(k, it) }
-    }
-    return map
-}
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
 
 /**
  * Сложная (6 баллов)

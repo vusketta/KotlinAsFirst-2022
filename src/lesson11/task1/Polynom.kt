@@ -74,20 +74,20 @@ class Polynom(vararg coeffs: Double) {
     /**
      * Вычитание
      */
-    operator fun minus(other: Polynom): Polynom = Polynom(
-        *DoubleArray(maxOf(this.data.size, other.data.size)) {
-            this.data.getOrElse(it) { 0.0 } - other.data.getOrElse(it) { 0.0 }
-        }.reversedArray()
-    )
+    operator fun minus(other: Polynom): Polynom = this.plus(other.unaryMinus())
 
     /**
      * Умножение
      */
-    operator fun times(other: Polynom): Polynom = Polynom(
-        *DoubleArray(maxOf(this.data.size, other.data.size)) {
-            this.data.getOrElse(it) { 0.0 } * other.data.getOrElse(it) { 0.0 }
-        }.reversedArray()
-    )
+    operator fun times(other: Polynom): Polynom {
+        val result = DoubleArray(data.size + other.data.size) { 0.0 }
+        for (i in data.indices) {
+            for (j in other.data.indices) {
+                result[i + j] += data[i] * other.data[j]
+            }
+        }
+        return Polynom(*result.reversedArray())
+    }
 
     /**
      * Деление
