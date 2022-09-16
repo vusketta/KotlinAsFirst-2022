@@ -339,11 +339,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         return temp
     }
 
-    val lines = File(inputName).readLines()
+    val lines = File(inputName).readText().parseMarkdown().lines()
     writer.write("<html><body>")
     writer.write("<p>")
-    lines.forEach {
-        if (it.isBlank()) writer.write("</p><p>") else writer.write(it.parseMarkdown())
+    for (i in 0 until lines.size - 1) {
+        if (lines[i].isEmpty()) writer.write("</p><p>") else writer.write(lines[i])
     }
     writer.write("</p>")
     writer.write("</body></html>")
