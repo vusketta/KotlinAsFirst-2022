@@ -102,7 +102,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val text = File(inputName).readText().lowercase()
     val map = mutableMapOf<String, Int>()
     substrings.forEach {
-        map.put(it, countMatches(text, it.lowercase()))
+        map[it] = countMatches(text, it.lowercase())
     }
     return map.toMap()
 }
@@ -324,40 +324,39 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    fun String.parseMarkdown(): String {
-        val markdownToHTML = mapOf("**" to "b", "*" to "i", "~~" to "s")
-        var temp = this
-        markdownToHTML.forEach { (k, v) ->
-            while (temp.contains(k)) {
-                val start = temp.indexOf(k)
-                val end = temp.indexOf(k, start + k.length)
-                if (end == -1) break
-                temp = temp.substring(0, start) + "<$v>" + temp.substring(start + k.length, end) + "</$v>" +
-                        temp.substring(end + k.length, temp.length)
+    val lines = File(inputName).readText().parseMarkdown().split("\n").toMutableList()
+    var isPrevBlank = true
+    for (i in lines.indices) {
+        if (lines[i].isBlank()) {
+            if (isPrevBlank) continue
+            if (i < lines.size - 1 && lines[i + 1].isNotBlank()) {
+                lines[i] = "</p><p>"
+                isPrevBlank = true
             }
+        } else {
+            isPrevBlank = false
         }
-        return temp
     }
+    File(outputName).bufferedWriter().use { out ->
+        out.write("<html><body><p>")
+        out.write(lines.joinToString(separator = ""))
+        out.write("</p></body></html>")
+    }
+}
 
-    val lines = File(inputName).readLines()
-    val stringBuilder = StringBuilder()
-    writer.write("<html><body>")
-    lines.forEach {
-        if (it.isEmpty()) {
-            writer.write("<p>")
-            writer.write(stringBuilder.toString().parseMarkdown())
-            writer.write("</p>")
-            stringBuilder.clear()
+fun String.parseMarkdown(): String {
+    val markdownToHTML = mapOf("**" to "b", "*" to "i", "~~" to "s")
+    var temp = this
+    markdownToHTML.forEach { (k, v) ->
+        while (temp.contains(k)) {
+            val start = temp.indexOf(k)
+            val end = temp.indexOf(k, start + k.length)
+            if (end == -1) break
+            temp = temp.substring(0, start) + "<$v>" + temp.substring(start + k.length, end) + "</$v>" +
+                    temp.substring(end + k.length, temp.length)
         }
-        stringBuilder.append(it)
     }
-    writer.write("<p>")
-    writer.write(stringBuilder.toString().parseMarkdown())
-    writer.write("</p>")
-    stringBuilder.clear()
-    writer.write("</body></html>")
-    writer.close()
+    return temp
 }
 
 /**
