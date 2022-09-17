@@ -345,16 +345,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 }
 
 fun String.parseMarkdown(): String {
-    val markdownToHTML = mapOf("**" to "b", "*" to "i", "~~" to "s")
+    val markdownToHTML = mapOf("\\*\\*" to "b", "\\*" to "i", "\\~\\~" to "s")
     var temp = this
     markdownToHTML.forEach { (k, v) ->
-        while (temp.contains(k)) {
-            val start = temp.indexOf(k)
-            val end = temp.indexOf(k, start + k.length)
-            if (end == -1) break
-            temp = temp.substring(0, start) + "<$v>" + temp.substring(start + k.length, end) + "</$v>" +
-                    temp.substring(end + k.length, temp.length)
-        }
+        temp = Regex("""$k(.+?)$k""").replace(temp) { "<$v>" + it.groupValues[1] + "</$v>" }
     }
     return temp
 }
