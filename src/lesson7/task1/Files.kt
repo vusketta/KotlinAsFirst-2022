@@ -348,7 +348,7 @@ fun String.parseMarkdown(): String {
     val markdownToHTML = mapOf("\\*\\*" to "b", "\\*" to "i", "\\~\\~" to "s")
     var temp = this
     markdownToHTML.forEach { (k, v) ->
-        temp = Regex("""$k(.+?)$k""").replace(temp) { "<$v>" + it.groupValues[1] + "</$v>" }
+        temp = Regex("""$k([\w\W]+?)$k""").replace(temp) { "<$v>" + it.groupValues[1] + "</$v>" }
     }
     return temp
 }
