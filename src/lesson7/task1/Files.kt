@@ -340,15 +340,22 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         return temp
     }
 
-    val lines = File(inputName).readText().parseMarkdown()
-        .split(Regex("""(\s*\n\s*|\s*\r\s*\n\s*){2,}""")).toMutableList()
-    while (lines.first().isBlank()) lines.removeFirst()
+    val lines = File(inputName).readLines()
+    val stringBuilder = StringBuilder()
     writer.write("<html><body>")
     lines.forEach {
-        writer.write("<p>")
-        writer.write(it)
-        writer.write("</p>")
+        if (it.isEmpty()) {
+            writer.write("<p>")
+            writer.write(stringBuilder.toString().parseMarkdown())
+            writer.write("</p>")
+            stringBuilder.clear()
+        }
+        stringBuilder.append(it)
     }
+    writer.write("<p>")
+    writer.write(stringBuilder.toString().parseMarkdown())
+    writer.write("</p>")
+    stringBuilder.clear()
     writer.write("</body></html>")
     writer.close()
 }
