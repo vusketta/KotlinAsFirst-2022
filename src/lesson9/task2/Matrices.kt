@@ -64,33 +64,28 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     val matrix = createMatrix(height, width, 0)
     var (l, r, u, d) = listOf(0, width - 1, 0, height - 1)
     var value = 1
-
     while (true) {
         if (l > r) break
         for (i in l..r) {
             matrix[u, i] = value++
         }
         u++
-
         if (u > d) break
         for (i in u..d) {
             matrix[i, r] = value++
         }
         r--
-
         if (l > r) break
         for (i in r downTo l) {
             matrix[d, i] = value++
         }
         d--
-
         if (u > d) break
         for (i in d downTo u) {
             matrix[i, l] = value++
         }
         l++
     }
-
     return matrix
 }
 
@@ -120,26 +115,22 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
             matrix[u, i] = value
         }
         u++
-
         if (u > d) break
         for (i in u..d) {
             matrix[i, r] = value
         }
         r--
-
         if (l > r) break
         for (i in r downTo l) {
             matrix[d, i] = value
         }
         d--
-
         if (u > d) break
         for (i in d downTo u) {
             matrix[i, l] = value
         }
         l++
     }
-
     return matrix
 }
 
@@ -169,7 +160,17 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
  * 4 5 6      8 5 2
  * 7 8 9      9 6 3
  */
-fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
+fun <E> rotate(matrix: Matrix<E>): Matrix<E> {
+    if (matrix.height != matrix.width) throw IllegalArgumentException()
+    val matrixTransposed = transpose(matrix)
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width / 2) {
+            matrixTransposed[i, j] = matrixTransposed[i, matrix.height - j - 1]
+                .also { matrixTransposed[i, matrix.height - j - 1] = matrixTransposed[i, j] }
+        }
+    }
+    return matrixTransposed
+}
 
 /**
  * Сложная (5 баллов)
@@ -190,13 +191,10 @@ fun <E> getColumn(matrix: Matrix<E>, column: Int) = List(matrix.height) { matrix
 
 fun isLatinSquare(matrix: Matrix<Int>): Boolean {
     if (matrix.height != matrix.width) return false
-
     for (i in 0 until matrix.height)
         if (!getRow(matrix, i).containsAll((1..matrix.height).toList())) return false
-
     for (i in 0 until matrix.width)
         if (!getColumn(matrix, i).containsAll((1..matrix.width).toList())) return false
-
     return true
 }
 
@@ -237,13 +235,10 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
 fun findHoles(matrix: Matrix<Int>): Holes {
     val rows: MutableList<Int> = mutableListOf()
     val columns: MutableList<Int> = mutableListOf()
-
     for (i in 0 until matrix.height)
         if (!getRow(matrix, i).contains(1)) rows.add(i)
-
     for (i in 0 until matrix.width)
         if (!getColumn(matrix, i).contains(1)) columns.add(i)
-
     return Holes(rows, columns)
 }
 
@@ -293,9 +288,7 @@ operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
  */
 operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
     if (this.width != other.height) throw IllegalArgumentException()
-
     val result = createMatrix(this.height, other.width, 0)
-
     for (i in 0 until this.height) {
         for (j in 0 until other.width) {
             for (k in 0 until this.width) {
@@ -303,7 +296,6 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
             }
         }
     }
-
     return result
 }
 

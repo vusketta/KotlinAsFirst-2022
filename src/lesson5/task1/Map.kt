@@ -157,8 +157,8 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.intersect(b
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> =
-    (mapA.keys + mapB.keys).associateWith { key ->
-        setOf(mapA[key], mapB[key])
+    (mapA.keys + mapB.keys).associateWith {
+        setOf(mapA[it], mapB[it])
             .filterNotNull()
             .joinToString(", ")
     }
@@ -270,7 +270,19 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val handshakes = mutableMapOf<String, MutableSet<String>>()
+    friends.forEach { person, familiars ->
+        if (familiars.isEmpty()) handshakes[person] = mutableSetOf()
+        for (familiar in familiars) if (familiar !in friends.keys) handshakes[familiar] = mutableSetOf()
+        handshakes[person] = familiars.toMutableSet()
+    }
+    handshakes.forEach { person, familiars ->
+        for (familiar in familiars) handshakes[familiar]!!.addAll(handshakes[familiar]!!)
+        handshakes[person]!!.remove(person)
+    }
+    return handshakes
+}
 
 /**
  * Сложная (6 баллов)
