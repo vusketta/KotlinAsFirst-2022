@@ -187,27 +187,22 @@ fun bestHighJump(jumps: String): Int {
  * использующее целые положительные числа, плюсы и минусы, разделённые пробелами.
  * Наличие двух знаков подряд "13 + + 10" или двух чисел подряд "1 2" не допускается.
  * Вернуть значение выражения (6 для примера).
- * Про нарушении формата входной строки бросить исключение IllegalArgumentException
+ * При нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
     val list = expression.replace("+", "+ ").replace("-", "- ")
         .split(Regex("""\s+"""))
-
     if (list.first() in "+-" || list.last() in "+-") throw IllegalArgumentException()
-
     var prev = list.first()
     var result = list.first().toInt()
     for (i in 1 until list.size) {
         if (prev in "+-" == list[i] in "+-") throw IllegalArgumentException()
-
-        if (list[i].matches(Regex("""\d+"""))) {
+        if (list[i].all { it.isDigit() }) {
             val number = list[i].toInt()
             if (prev == "+") result += number else result -= number
         }
-
         prev = list[i]
     }
-
     return result
 }
 
@@ -245,7 +240,8 @@ fun mostExpensive(description: String): String {
     val descriptionSplit = description.split("; ")
     val prices = mutableMapOf<String, Double>()
     descriptionSplit.forEach {
-        prices[it.split(" ")[0]] = it.split(" ")[1].toDouble()
+        val (name, price) = it.split(" ")
+        prices[name] = price.toDouble()
     }
     return prices.maxBy { it.value }.key
 }

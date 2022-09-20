@@ -137,11 +137,8 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    if (list.isEmpty()) return list
     val meanOfList = mean(list)
-    for (i in 0 until list.size) {
-        list[i] -= meanOfList
-    }
+    for (i in list.indices) list[i] -= meanOfList
     return list
 }
 
@@ -152,15 +149,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int {
-    if (a.isEmpty() || b.isEmpty()) return 0
-
-    val c = List(a.size) { it + 1 }.toIntArray()
-    for (i in a.indices) {
-        c[i] = a[i] * b[i]
-    }
-    return c.sum()
-}
+fun times(a: List<Int>, b: List<Int>): Int = a.mapIndexed { index, i -> i * b[index] }.sum()
 
 /**
  * Средняя (3 балла)
@@ -179,12 +168,7 @@ fun pow(x: Int, k: Int): Int = when {
     }
 }
 
-fun polynom(p: List<Int>, x: Int): Int {
-    var k = 0
-    var sum = 0
-    for (it in p) sum += it * pow(x, k++)
-    return sum
-}
+fun polynom(p: List<Int>, x: Int): Int = p.mapIndexed { index, i -> i * pow(x, index) }.sum()
 
 /**
  * Средняя (3 балла)
@@ -209,16 +193,15 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Множители в списке должны располагаться по возрастанию.
  */
 fun factorize(n: Int): List<Int> {
-    val result: MutableList<Int> = mutableListOf()
+    val result = mutableListOf<Int>()
     var number = n
     for (d in 2..n / 2) {
-        if (number == 1) break
         while (number % d == 0) {
             result.add(d)
             number /= d
         }
     }
-    return if (result.isEmpty()) listOf(n) else result.toList()
+    return if (result.isEmpty()) listOf(n) else result
 }
 
 /**
@@ -237,7 +220,16 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = if (n < base) listOf(n) else convert(n / base, base) + listOf(n % base)
+fun convert(n: Int, base: Int): List<Int> {
+    val list = mutableListOf<Int>()
+    var number = n
+    while (number >= base) {
+        list.add(number % base)
+        number /= base
+    }
+    list.add(number)
+    return list.reversed()
+}
 
 /**
  * Сложная (4 балла)
@@ -251,7 +243,7 @@ fun convert(n: Int, base: Int): List<Int> = if (n < base) listOf(n) else convert
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String =
-    convert(n, base).map { if (it in 10..36) ('a'..'z').toList()[it - 10] else it }.joinToString(separator = "")
+    convert(n, base).map { if (it > 9) 'a' + it - 10 else it }.joinToString(separator = "")
 
 /**
  * Средняя (3 балла)
@@ -275,9 +267,8 @@ fun decimal(digits: List<Int>, base: Int): Int =
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = str.split("").filter { it.isNotEmpty() }
-    .map { if (it[0] in ('a'..'z')) ('a'..'z').toList().indexOf(it[0]) + 10 else it.toInt() }
-    .mapIndexed { index, i -> i * pow(base, str.length - index - 1) }.sum()
+fun decimalFromString(str: String, base: Int): Int =
+    decimal(str.map { if (it.isLetter()) it.code - 'a'.code + 10 else it.code - '0'.code }, base)
 
 
 /**
@@ -288,15 +279,19 @@ fun decimalFromString(str: String, base: Int): Int = str.split("").filter { it.i
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-val toRoman = mapOf(
-    1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL", 50 to "L",
-    90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M"
-)
-
 fun roman(n: Int): String {
-    val key = toRoman.keys.filter { it <= n }.maxOrNull()
-    val romanDigit = toRoman[key]
-    return if (n == key && romanDigit is String) romanDigit else romanDigit + roman(n - key!!)
+    val toRoman = mapOf(
+        1 to "I", 4 to "IV", 5 to "V", 9 to "IX", 10 to "X", 40 to "XL", 50 to "L",
+        90 to "XC", 100 to "C", 400 to "CD", 500 to "D", 900 to "CM", 1000 to "M"
+    )
+    val romanNumber = StringBuilder()
+    var (number, key) = n to 0
+    do {
+        number -= key
+        key = toRoman.keys.filter { it <= number }.max()
+        romanNumber.append(toRoman[key])
+    } while (number != key)
+    return romanNumber.toString()
 }
 
 /**
@@ -309,7 +304,6 @@ fun roman(n: Int): String {
 fun russian(n: Int): String {
     val result = mutableListOf<String>()
     val thousands = n / 1000
-
     fun russianTriple(n: Int, isMaleForm: Boolean = true): String {
         val oneTwo = listOf(listOf("один", "одна"), listOf("два", "две"))
         val digits = listOf("три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
@@ -339,18 +333,17 @@ fun russian(n: Int): String {
         }
         return words.joinToString(separator = " ")
     }
-
     if (thousands > 0) {
-        var thousandsEnding = ""
         result.add(russianTriple(thousands, false))
         when {
-            result[0].endsWith("одна") -> thousandsEnding = "а"
-            result[0].endsWith("две") || result[0].endsWith("три")
-                    || result[0].endsWith("четыре") -> thousandsEnding = "и"
+            result[0].endsWith("одна") -> result.add("тысячa")
+            result[0].endsWith("две")
+                    || result[0].endsWith("три")
+                    || result[0].endsWith("четыре") -> result.add("тысячи")
+
+            else -> result.add("тысяч")
         }
-        result.add("тысяч$thousandsEnding")
     }
     if (n % 1000 > 0) result.add(russianTriple(n % 1000))
-
     return result.joinToString(separator = " ").trim()
 }
