@@ -153,10 +153,10 @@ fun stringToIntList(string: String): List<String> =
     replaceList(string, listOf("-", "%"), "").replace(Regex("""\s+"""), " ")
         .split(" ").filter { it.matches(Regex("""\d+""")) }
 
-fun bestLongJump(jumps: String): Int? {
+fun bestLongJump(jumps: String): Int {
     if (!jumps.matches(Regex("""(\d|\s|-|%)*"""))) return -1
     val list = stringToIntList(jumps)
-    return if (list.isNotEmpty()) list.maxOfOrNull { it.toInt() } else -1
+    return list.maxOfOrNull { it.toInt() } ?: -1
 }
 
 /**
