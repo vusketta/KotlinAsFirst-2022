@@ -198,25 +198,30 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
+    val writer = File(outputName).bufferedWriter()
     val lines = File(inputName).readLines()
         .map { it.replace(Regex("""\s+"""), " ").trim() }
-    val maxLength = lines.maxBy { it.length }.length
-    File(outputName).bufferedWriter().use { out ->
+    try {
+        val maxLength = lines.maxBy { it.length }.length
         lines.forEach { line ->
             val words = line.split(" ").toMutableList()
             when {
-                words.size == 1 -> out.write(line)
+                words.size == 1 -> writer.write(line)
                 line.isNotBlank() -> {
                     var i = 0
                     repeat(maxLength - line.length) {
                         words[i] += " "
                         i = if (i + 2 < words.size) i + 1 else 0
                     }
-                    out.write(words.joinToString(" "))
+                    writer.write(words.joinToString(" "))
                 }
             }
-            out.newLine()
+            writer.newLine()
         }
+    } catch (e: NoSuchElementException) {
+        writer.write("")
+    } finally {
+        writer.close()
     }
 }
 
