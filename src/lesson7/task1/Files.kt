@@ -67,12 +67,15 @@ fun deleteMarked(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     File(inputName).forEachLine { line ->
         when {
-            line.isEmpty() -> writer.write(System.lineSeparator())
-            !line.startsWith("_") -> writer.write(line + System.lineSeparator())
+            line.isEmpty() -> writer.newLine()
+            !line.startsWith("_") -> {
+                writer.write(line)
+                writer.newLine()
+            }
+
             else -> {}
         }
     }
-
     writer.close()
 }
 
@@ -121,7 +124,18 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val grammar = mapOf(
+        'Ы' to 'И', 'Я' to 'А', 'Ю' to 'У',
+        'ы' to 'и', 'я' to 'а', 'ю' to 'у'
+    )
+    var text = File(inputName).readText()
+    val finds = Regex("[жчшщ][ыяю]", RegexOption.IGNORE_CASE).findAll(text)
+    File(outputName).bufferedWriter().use { out ->
+        finds.forEach {
+            text = text.replaceRange(it.range, "${it.value[0]}${grammar[it.value[1]]}")
+        }
+        out.write(text)
+    }
 }
 
 /**
@@ -142,7 +156,15 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val lines = File(inputName).readLines()
+    val maxLength = lines.maxBy { it.trim().length }.trim().length
+    lines.forEach {
+        writer.write(" ".repeat((maxLength - it.trim().length) / 2))
+        writer.write(it.trim())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -196,7 +218,13 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val frequencies = Regex("""\p{LC}+""").findAll(File(inputName).readText().lowercase())
+        .map { it.value }.groupBy { it }.map { it.key to it.value.count() }
+        .sortedByDescending { (_, v) -> v }.toMap()
+    return if (frequencies.size < 21) frequencies else
+        frequencies.filterValues { it >= frequencies.values.toList()[19] }
+}
 
 /**
  * Средняя (14 баллов)
@@ -324,7 +352,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val lines = File(inputName).readText().parseMarkdown().split("\n").toMutableList()
+    val lines = File(inputName).readText().parseMarkdownSimple().split("\n").toMutableList()
     var isPrevBlank = true
     for (i in lines.indices) {
         if (lines[i].isBlank()) {
@@ -344,7 +372,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     }
 }
 
-fun String.parseMarkdown(): String {
+fun String.parseMarkdownSimple(): String {
     val markdownToHTML = mapOf("\\*\\*" to "b", "\\*" to "i", "\\~\\~" to "s")
     var temp = this
     markdownToHTML.forEach { (k, v) ->
