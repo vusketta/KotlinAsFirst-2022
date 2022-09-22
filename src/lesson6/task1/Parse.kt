@@ -134,9 +134,10 @@ fun replaceList(string: String, list: List<String>, newValue: String): String {
 }
 
 fun flattenPhoneNumber(phone: String): String =
-    if (phone.matches(Regex("""(\+\d*)?\s*(\(\d+(\d|-|\s)*\))*\s*(\d|-|\s)*""")))
-        replaceList(phone, listOf(" ", "(", ")", "-"), "")
-            .replace(Regex("""\s"""), "") else ""
+    if (phone.matches(Regex("""(\+\d*)?\s*(\(\d+(\d|-|\s)*\))*\s*[\d-\s]*"""))
+        && !phone.matches(Regex("""\++"""))
+    ) replaceList(phone, listOf(" ", "(", ")", "-"), "")
+        .replace(Regex("""\s"""), "") else ""
 
 /**
  * Средняя (5 баллов)
