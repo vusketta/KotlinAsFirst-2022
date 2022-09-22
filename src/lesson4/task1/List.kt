@@ -336,7 +336,7 @@ fun russian(n: Int): String {
     if (thousands > 0) {
         result.add(russianTriple(thousands, false))
         when {
-            result[0].endsWith("одна") -> result.add("тысячa")
+            result[0].endsWith("одна") -> result.add("тысяча")
             result[0].endsWith("две")
                     || result[0].endsWith("три")
                     || result[0].endsWith("четыре") -> result.add("тысячи")
