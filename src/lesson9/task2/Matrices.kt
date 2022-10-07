@@ -4,6 +4,9 @@ package lesson9.task2
 
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
+import lesson9.task1.forEach
+import lesson9.task1.indicesOf
+import kotlin.math.abs
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -215,7 +218,24 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
  *
  * 42 ===> 0
  */
-fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
+    val result = createMatrix(matrix.height, matrix.width, 0)
+    matrix.forEach { (first, second), _ -> result[first, second] = matrix.neighbourSum(first, second) }
+    return result
+}
+
+fun Matrix<Int>.neighbourSum(i: Int, j: Int): Int {
+    val neighbours = listOf(
+        i - 1 to j - 1, i - 1 to j, i - 1 to j + 1, i to j - 1, i to j + 1,
+        i + 1 to j - 1, i + 1 to j, i + 1 to j + 1
+    )
+    var sum = 0
+    for ((first, second) in neighbours) {
+        if (first in 0 until height && second in 0 until width)
+            sum += this[first, second]
+    }
+    return sum
+}
 
 /**
  * Средняя (4 балла)
@@ -261,7 +281,16 @@ data class Holes(val rows: List<Int>, val columns: List<Int>)
  *
  * К примеру, центральный элемент 12 = 1 + 2 + 4 + 5, элемент в левом нижнем углу 12 = 1 + 4 + 7 и так далее.
  */
-fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
+    for (i in 1 until matrix.width) matrix[0, i] += matrix[0, i - 1]
+    for (i in 1 until matrix.height) matrix[i, 0] += matrix[i - 1, 0]
+    matrix.forEach { (i, j), _ ->
+        if (0 < i && i < matrix.height &&
+            0 < j && j < matrix.height
+        ) matrix[i, j] += matrix[i - 1, j] + matrix[i, j - 1] - matrix[i - 1, j - 1]
+    }
+    return matrix
+}
 
 /**
  * Простая (2 балла)
@@ -319,7 +348,21 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
  * Вернуть тройку (Triple) -- (да/нет, требуемый сдвиг по высоте, требуемый сдвиг по ширине).
  * Если наложение невозможно, то первый элемент тройки "нет" и сдвиги могут быть любыми.
  */
-fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> = TODO()
+fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> {
+    for (rowShift in 0..lock.height - key.height) {
+        for (colShift in 0..lock.width - key.width) {
+            loop@ for (i in 0 until key.height) {
+                for (j in 0 until key.width) {
+                    if (lock[i + rowShift, j + colShift] == 1 && key[i, j] != 0) {
+                        break@loop
+                    }
+                    if (i == key.height - 1 && j == key.width - 1) return Triple(true, rowShift, colShift)
+                }
+            }
+        }
+    }
+    return Triple(false, -1, -1)
+}
 
 /**
  * Сложная (8 баллов)
@@ -348,7 +391,18 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * 0  4 13  6
  * 3 10 11  8
  */
-fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> = TODO()
+fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
+    for (move in moves) {
+        val (zeroIndices, moveIndices) = listOf(matrix.indicesOf(0), matrix.indicesOf(move))
+        if (moveIndices == -1 to -1 ||
+            abs(moveIndices.first - zeroIndices.first) > 1 ||
+            abs(moveIndices.second - zeroIndices.second) > 1
+        ) throw IllegalStateException() //TODO FIX DIAGONALS
+        matrix[zeroIndices.first, zeroIndices.second] = move
+        matrix[moveIndices.first, moveIndices.second] = 0
+    }
+    return matrix
+}
 
 /**
  * Очень сложная (32 балла)

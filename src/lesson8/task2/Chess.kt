@@ -2,6 +2,11 @@
 
 package lesson8.task2
 
+import lesson2.task1.bishopMove
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.roundToInt
+
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -38,13 +43,12 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square {
     if (notation.length != 2) throw IllegalArgumentException()
-
     val newNotation = Pair(
         mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6, 'g' to 7, 'h' to 8)[notation[0]],
         notation[1].digitToInt()
     )
     val newSquare = newNotation.first?.let { Square(it, newNotation.second) }
-    return if (newSquare != null && newSquare.inside()) newSquare else throw IllegalArgumentException()
+    return if (newSquare!!.inside()) newSquare else throw IllegalArgumentException()
 }
 
 /**
@@ -121,7 +125,13 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
  * Примеры: bishopMoveNumber(Square(3, 1), Square(6, 3)) = -1; bishopMoveNumber(Square(3, 1), Square(3, 7)) = 2.
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
-fun bishopMoveNumber(start: Square, end: Square): Int = TODO()
+fun bishopMoveNumber(start: Square, end: Square): Int = when {
+    !start.inside() || !end.inside() -> throw IllegalArgumentException()
+    start == end -> 0
+    bishopMove(start.column, start.row, end.column, end.row) -> 1
+    (start.row + start.column) % 2 == (end.row + end.column) % 2 -> 2
+    else -> -1
+}
 
 /**
  * Сложная (5 баллов)
@@ -141,7 +151,25 @@ fun bishopMoveNumber(start: Square, end: Square): Int = TODO()
  *          bishopTrajectory(Square(1, 3), Square(6, 8)) = listOf(Square(1, 3), Square(6, 8))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMoveNumber(start, end)) {
+    -1 -> listOf()
+    0 -> listOf(start)
+    1 -> listOf(start, end)
+    else -> {
+        var figure = Square(0, 0)
+        loop@ for (column in 1..8) {
+            for (row in 1..8) {
+                if (abs(start.row - row) == abs(start.column - column)
+                    && abs(end.row - row) == abs(end.column - column)
+                ) {
+                    figure = Square(column, row)
+                    break@loop
+                }
+            }
+        }
+        listOf(start, figure, end)
+    }
+}
 
 /**
  * Средняя (3 балла)
@@ -163,7 +191,8 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = TODO()
+fun kingMoveNumber(start: Square, end: Square): Int =
+    max(abs(start.row - end.row), abs(start.column - end.column))
 
 /**
  * Сложная (5 баллов)
@@ -204,7 +233,14 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int {
+    val rowDifference = abs(start.row - end.row)
+    val columnDifference = abs(start.column - end.column)
+    val max = listOf(
+        rowDifference / 2.0, columnDifference / 2.0, (rowDifference + columnDifference) / 3.0
+    ).max().roundToInt()
+    return max + (max + rowDifference + columnDifference) % 2
+}
 
 /**
  * Очень сложная (10 баллов)

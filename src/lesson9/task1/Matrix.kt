@@ -44,6 +44,19 @@ interface Matrix<E> {
  */
 fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
 
+inline fun <E> Matrix<E>.forEach(action: (Pair<Int, Int>, E) -> Unit) {
+    for (i in 0 until height) for (j in 0 until width) action(i to j, this[i, j])
+}
+
+fun <E> Matrix<E>.indicesOf(element: E): Pair<Int, Int> {
+    for (i in 0 until height) {
+        for (j in 0 until width) {
+            if (element == this[i, j]) return i to j
+        }
+    }
+    return -1 to -1
+}
+
 /**
  * Средняя сложность (считается двумя задачами в 3 балла каждая)
  *

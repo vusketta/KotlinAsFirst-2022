@@ -160,7 +160,7 @@ fun centerFile(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
     if (lines.isEmpty()) writer.write("")
     else {
-        val maxLength = lines.maxBy { it.trim().length }.trim().length
+        val maxLength = lines.maxByOrNull { it.trim().length }!!.trim().length
         lines.forEach {
             writer.write(" ".repeat((maxLength - it.trim().length) / 2))
             writer.write(it.trim())
@@ -202,7 +202,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
         .map { it.replace(Regex("""\s+"""), " ").trim() }
     try {
-        val maxLength = lines.maxBy { it.length }.length
+        val maxLength = lines.maxByOrNull { it.length }!!.length
         lines.forEach { line ->
             val words = line.split(" ").toMutableList()
             when {
@@ -289,7 +289,16 @@ fun top20Words(inputName: String): Map<String, Int> {
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    var text = File(inputName).readText()
+    File(outputName).bufferedWriter().use { out ->
+        dictionary.forEach { (k, v) ->
+            text = if (k.isLetter()) {
+                text.replace(k.lowercase(), v.lowercase())
+                    .replace(k.uppercase(), v.replaceFirstChar { it.uppercaseChar() })
+            } else text.replace(k.toString(), v)
+        }
+        out.write(text)
+    }
 }
 
 /**

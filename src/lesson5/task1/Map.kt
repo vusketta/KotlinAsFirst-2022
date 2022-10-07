@@ -270,24 +270,7 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
-    val handshakes = mutableMapOf<String, MutableSet<String>>()
-    friends.forEach { (person, familiars) ->
-        for (familiar in familiars) if (familiar !in friends.keys) handshakes[familiar] = mutableSetOf()
-        handshakes[person] = familiars.toMutableSet()
-    }
-    val map = mutableSetOf<String>()
-    handshakes.forEach { (person, familiars) ->
-        familiars.forEach { familiar ->
-            map.add(familiar)
-            map.addAll(handshakes[familiar]!!)
-        }
-        map.remove(person)
-        handshakes[person] = map
-        map.clear()
-    }
-    return handshakes
-}
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
 
 /**
  * Сложная (6 баллов)
@@ -308,9 +291,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val map = mutableMapOf<Int, Int>()
-    var diff: Int
     for (i in list.indices) {
-        diff = number - list[i]
+        val diff = number - list[i]
         if (map.containsKey(diff)) return map[diff]!! to i
         map.put(list[i], i)
     }

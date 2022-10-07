@@ -268,7 +268,7 @@ fun decimal(digits: List<Int>, base: Int): Int =
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int =
-    decimal(str.map { if (it.isLetter()) it.code - 'a'.code + 10 else it.code - '0'.code }, base)
+    decimal(str.map { if (it.isLetter()) it - 'a' + 10 else it - '0' }, base)
 
 
 /**
