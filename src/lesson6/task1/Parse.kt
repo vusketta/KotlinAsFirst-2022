@@ -105,11 +105,9 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    if (!digital.matches(Regex("""\d\d.\d\d.\d+"""))) return ""
-
+    if (!digital.matches(Regex("""\d\d\.\d\d\.\d+"""))) return ""
     val date = digital.split(".").map { it.toInt() }
     if (date[1] !in 1..12 || daysInMonth(date[1], date[2]) < date[0]) return ""
-
     return "${date[0]} ${monthString[date[1] - 1]} ${date[2]}"
 }
 
