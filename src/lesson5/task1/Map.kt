@@ -285,8 +285,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
                 }
             }
         }
+        val loopContinue = current != next
         next.map { (key, value) -> current[key] = value.toMutableSet() }
-    } while (current != next)
+    } while (loopContinue)
     return current
 }
 
