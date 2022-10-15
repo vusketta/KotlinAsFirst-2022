@@ -250,7 +250,18 @@ fun mostExpensive(description: String): String {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+val romanToArabic = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+
+fun fromRoman(roman: String): Int {
+    if (roman.contains(Regex("""[^IVXLCDM]"""))) return -1
+    var result = romanToArabic[roman.last()]!!
+    for (i in roman.length - 2 downTo 0) {
+        val current = romanToArabic[roman[i]]!!
+        result = if (current >= romanToArabic[roman[i + 1]]!!) result + current
+        else result - current
+    }
+    return result
+}
 
 /**
  * Очень сложная (7 баллов)
