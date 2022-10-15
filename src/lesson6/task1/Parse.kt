@@ -1,9 +1,7 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
-
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import java.lang.Integer.max
+import kotlin.math.max
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -84,7 +82,6 @@ val monthString = listOf(
 
 fun dateStrToDigit(str: String): String {
     if (!str.matches(Regex("""\d* [а-я]* \d*"""))) return ""
-
     val date = str.split(" ")
     if (!monthString.contains(date[1]) || daysInMonth(
             monthString.indexOf(date[1]) + 1,
@@ -125,17 +122,10 @@ fun dateDigitToStr(digital: String): String {
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun replaceList(string: String, list: List<String>, newValue: String): String {
-    var result = string
-    for (str in list) result = result.replace(str, newValue)
-    return result
-}
 
 fun flattenPhoneNumber(phone: String): String =
-    if (phone.matches(Regex("""(\+\d*)?\s*(\(\d+(\d|-|\s)*\))*\s*[\d-\s]*"""))
-        && !phone.matches(Regex("""\++"""))
-    ) replaceList(phone, listOf(" ", "(", ")", "-"), "")
-        .replace(Regex("""\s"""), "") else ""
+    if (phone.matches(Regex("""(\+\d*)?\s*(\([\s\-\d]+\))?[\s\-\d]*""")))
+        phone.filterNot { it in " ()-" } else ""
 
 /**
  * Средняя (5 баллов)
@@ -147,14 +137,12 @@ fun flattenPhoneNumber(phone: String): String =
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun stringToIntList(string: String): List<String> =
-    replaceList(string, listOf("-", "%"), "").replace(Regex("""\s+"""), " ")
-        .split(" ").filter { it.matches(Regex("""\d+""")) }
-
 fun bestLongJump(jumps: String): Int {
-    if (!jumps.matches(Regex("""(\d|\s|-|%)*"""))) return -1
-    val list = stringToIntList(jumps)
-    return list.maxOfOrNull { it.toInt() } ?: -1
+    if (jumps.contains(Regex("""[^\d\s%-]|\s\s|--|%%|[\d-]%|[\d%]-|[-%]\d"""))
+        || !jumps.contains(Regex("""\d+"""))
+    ) return -1
+    val list = jumps.filterNot { it in "-%" }.split(Regex("""\s+""")).map { it.toInt() }
+    return list.maxOfOrNull { it } ?: -1
 }
 
 /**
@@ -169,11 +157,15 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    if (!jumps.matches(Regex("""(\d|\s|-|%|\+)*""")) || !jumps.contains("+")) return -1
+    if (jumps.contains(
+            Regex("""[^\d\s%\-+]|\s\s|--|\+\+|[\d+-]%|%%%\s*\S+|[\d-]\+|[\d+]-|[%+-]\d""")
+        )
+    ) return -1
     val list = jumps.split(" ")
     var bestJump = -1
-    for (i in 0 until list.size - 1) {
-        if (list[i + 1].contains("+")) bestJump = max(bestJump, list[i].toInt())
+    list.forEachIndexed { index, value ->
+        if (index < list.size - 1 && list[index + 1].contains("+"))
+            bestJump = max(bestJump, value.toInt())
     }
     return bestJump
 }
@@ -188,20 +180,23 @@ fun bestHighJump(jumps: String): Int {
  * При нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    val list = expression.replace("+", "+ ").replace("-", "- ")
-        .split(Regex("""\s+"""))
-    if (list.first() in "+-" || list.last() in "+-") throw IllegalArgumentException()
-    var prev = list.first()
-    var result = list.first().toInt()
-    for (i in 1 until list.size) {
-        if (prev in "+-" == list[i] in "+-") throw IllegalArgumentException()
-        if (list[i].all { it.isDigit() }) {
-            val number = list[i].toInt()
-            if (prev == "+") result += number else result -= number
+    if (expression.contains(Regex("""[^\d\s+-]|\s\s|\d\s\d|[+-]\s[+-]|[+-]\d|\d[+-]""")) ||
+        !expression.matches(Regex("""\d.*"""))
+    ) throw IllegalArgumentException()
+    val list = expression.split(Regex("""\s+"""))
+    val ints = mutableListOf<Int>()
+    var isNegative = false
+    list.map {
+        when (it) {
+            "-" -> isNegative = true
+            "+" -> {}
+            else -> {
+                ints.add(if (isNegative) -it.toInt() else it.toInt())
+                isNegative = false
+            }
         }
-        prev = list[i]
     }
-    return result
+    return ints.sum()
 }
 
 /**
