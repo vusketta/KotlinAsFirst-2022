@@ -294,8 +294,8 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         dictionary.forEach { (k, v) ->
             text = if (k.isLetter()) {
                 text.replace(k.lowercase(), v.lowercase())
-                    .replace(k.uppercase(), v.replaceFirstChar { it.uppercaseChar() })
-            } else text.replace(k.toString(), v)
+                    .replace(k.uppercase(), v.lowercase().replaceFirstChar { v.uppercase() })
+            } else text.replace(k.toString(), v.lowercase())
         }
         out.write(text)
     }
