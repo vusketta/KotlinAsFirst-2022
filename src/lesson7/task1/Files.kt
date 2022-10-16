@@ -218,7 +218,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             }
             writer.newLine()
         }
-    } catch (e: NoSuchElementException) {
+    } catch (e: Exception) {
         writer.write("")
     } finally {
         writer.close()
