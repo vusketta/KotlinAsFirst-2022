@@ -1,7 +1,9 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.min
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -299,4 +301,48 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun checkCorrectBracketSequences(str: String): Boolean {
+    val brackets = str.filterNot { it in " ><+-" }
+    var counter = 0
+    brackets.forEach {
+        if (it == '[') counter++ else counter--
+        if (counter < 0) return false
+    }
+    return counter == 0
+}
+
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (commands.contains(Regex("""[^ ><+\-\[\]]"""))
+        || !checkCorrectBracketSequences(commands)
+    ) throw IllegalArgumentException()
+    val conveyor = MutableList(cells) { 0 }
+    val n = min(limit, commands.length)
+    var index = floor(cells / 2.0).toInt()
+    var i = 0
+    while (i < n) {
+        when (commands[i]) {
+            '<' -> index--
+            '>' -> index++
+            '+' -> conveyor[index]++
+            '-' -> conveyor[index]--
+            '[' -> {
+                if (conveyor[index] == 0) {
+                    while (commands[i] != ']') i++
+                    i++
+                }
+            }
+
+            ']' -> {
+                if (conveyor[index] != 0) {
+                    while (commands[i] != '[') i--
+                    i--
+                }
+            }
+
+            else -> {}
+        }
+        if (i !in commands.indices) throw IllegalStateException()
+        i++
+    }
+    return conveyor
+}
