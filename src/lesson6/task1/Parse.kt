@@ -208,11 +208,12 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     val words = str.split(" ")
-    for (i in 1 until words.size) {
-        if (words[i].lowercase() == words[i - 1].lowercase())
-            return str.indexOf(words[i - 1] + " " + words[i])
-    }
-    return -1
+    val duplicates = words.filterIndexed { i, s ->
+        i in 1..words.lastIndex && s.lowercase() == words[i - 1].lowercase()
+                || i in 0 until words.lastIndex && s.lowercase() == words[i + 1].lowercase()
+    }.chunked(2)
+        .map { it.joinToString(" ") }
+    return if (duplicates.isEmpty()) -1 else str.indexOf(duplicates.first())
 }
 
 /**
