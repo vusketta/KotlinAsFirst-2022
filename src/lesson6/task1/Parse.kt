@@ -2,7 +2,6 @@ package lesson6.task1
 
 import lesson2.task2.daysInMonth
 import kotlin.math.floor
-import kotlin.math.max
 import kotlin.math.min
 
 // Урок 6: разбор строк, исключения
@@ -139,13 +138,15 @@ fun flattenPhoneNumber(phone: String): String =
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int {
+fun bestLongJump(jumps: String): Int =
     if (jumps.contains(Regex("""[^\d\s%-]|\s\s|--|%%|[\d-]%|[\d%]-|[-%]\d"""))
         || !jumps.contains(Regex("""\d+"""))
-    ) return -1
-    val list = jumps.filterNot { it in "-%" }.split(Regex("""\s+""")).map { it.toInt() }
-    return list.maxOfOrNull { it } ?: -1
-}
+    ) -1
+    else jumps.filterNot { it in "-%" }
+        .split(Regex("""\s+"""))
+        .map { it.toInt() }
+        .maxOfOrNull { it } ?: -1
+
 
 /**
  * Сложная (6 баллов)
@@ -164,12 +165,8 @@ fun bestHighJump(jumps: String): Int {
         )
     ) return -1
     val list = jumps.split(" ")
-    var bestJump = -1
-    list.forEachIndexed { index, value ->
-        if (index < list.size - 1 && list[index + 1].contains("+"))
-            bestJump = max(bestJump, value.toInt())
-    }
-    return bestJump
+    return list.filterIndexed { i, _ -> i < list.lastIndex && list[i + 1].contains("+") }
+        .maxOf { it.toInt() }
 }
 
 /**
@@ -182,9 +179,8 @@ fun bestHighJump(jumps: String): Int {
  * При нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (expression.contains(Regex("""[^\d\s+-]|\s\s|\d\s\d|[+-]\s[+-]|[+-]\d|\d[+-]""")) ||
-        !expression.matches(Regex("""\d.*"""))
-    ) throw IllegalArgumentException()
+    val str = expression.replace(Regex("\\s+"), " ")
+    if (!str.matches(Regex("""\d+(\s[+-]\s\d+)*"""))) throw IllegalArgumentException()
     val list = expression.split(Regex("""\s+"""))
     val ints = mutableListOf<Int>()
     var isNegative = false
@@ -230,16 +226,12 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""(.+ \d+(.\d+)?; )*.+ \d+(.\d+)?"""))) return ""
-    val descriptionSplit = description.split("; ")
-    val prices = mutableMapOf<String, Double>()
-    descriptionSplit.forEach {
-        val (name, price) = it.split(" ")
-        prices[name] = price.toDouble()
-    }
-    return prices.maxByOrNull { it.value }!!.key
-}
+fun mostExpensive(description: String): String =
+    if (!description.matches(Regex("""(.+ \d+(.\d+)?; )*.+ \d+(.\d+)?"""))) ""
+    else description.split("; ")
+        .map { it.split(" ") }
+        .maxByOrNull { it.last().toDouble() }!!
+        .first()
 
 /**
  * Сложная (6 баллов)
