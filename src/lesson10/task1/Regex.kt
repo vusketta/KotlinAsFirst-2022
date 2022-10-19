@@ -73,19 +73,24 @@ sealed class Expression {
             PLUS -> {
                 left.calculate(x) + right.calculate(x)
             }
+
             MINUS -> {
                 left.calculate(x) - right.calculate(x)
             }
+
             TIMES -> {
                 left.calculate(x) * right.calculate(x)
             }
+
             DIV -> {
                 left.calculate(x) / right.calculate(x)
             }
+
             POW -> {
                 pow(left.calculate(x), right.calculate(x))
             }
         }
+
         is Negate -> -arg.calculate(x)
     }
 }
@@ -135,7 +140,7 @@ class Parser(private val groups: List<String>) {
         check(pos < groups.size) { "Unexpected expression end" }
         return when (val group = groups[pos++]) {
             "x" -> Expression.Variable
-            "-" -> Expression.Negate(parseExponentiation())
+            "-" -> Expression.Negate(parseExpression())
             "(" -> {
                 val arg = parseExpression()
                 val next = groups[pos++]

@@ -390,21 +390,16 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val lines = File(inputName).readText().parseMarkdownSimple().split("\n").toMutableList()
     var isPrevBlank = true
-    for (i in lines.indices) {
-        if (lines[i].isBlank()) {
-            if (isPrevBlank) continue
-            if (i < lines.size - 1 && lines[i + 1].isNotBlank()) {
+    lines.forEachIndexed { i, s ->
+        if (s.isBlank()) {
+            if (!isPrevBlank && i < lines.lastIndex && lines[i + 1].isNotBlank()) {
                 lines[i] = "</p><p>"
                 isPrevBlank = true
             }
-        } else {
-            isPrevBlank = false
-        }
+        } else isPrevBlank = false
     }
     File(outputName).bufferedWriter().use { out ->
-        out.write("<html><body><p>")
-        out.write(lines.joinToString(separator = ""))
-        out.write("</p></body></html>")
+        out.write("<html><body><p>${lines.joinToString(" ")}</p></body></html>")
     }
 }
 
