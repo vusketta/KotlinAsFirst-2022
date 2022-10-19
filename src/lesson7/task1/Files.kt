@@ -290,12 +290,15 @@ fun top20Words(inputName: String): Map<String, Int> {
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
     var text = File(inputName).readText()
+    val dict = mutableMapOf<Char, String>()
+    dictionary.forEach { (t, u) -> dict[t] = u.lowercase() }
     File(outputName).bufferedWriter().use { out ->
-        dictionary.forEach { (k, v) ->
-            text = if (k.isLetter()) {
-                text.replace(k.lowercase(), v.lowercase())
-                    .replace(k.uppercase(), v.lowercase().replaceFirstChar { v.uppercase() })
-            } else text.replace(k.toString(), v.lowercase())
+        dict.forEach { (k, v) ->
+            text = if (!k.isLetter()) text.replace(k.toString(), v)
+            else {
+                text.replace(k.uppercase(), v.replaceFirstChar { it.uppercase() })
+                    .replace(k.lowercase(), v)
+            }
         }
         out.write(text)
     }
