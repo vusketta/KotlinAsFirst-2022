@@ -578,7 +578,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val rhvLength = digitNumber(rhv)
     val factors = rhv.toString().map { d -> lhv * (d - '0') }
     val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
-    val lineLength = maxOf(rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
+    val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
     File(outputName).bufferedWriter().use { out ->
         out.write(" ".repeat(lineLength - lhvLength) + lhv)
         out.newLine()
@@ -591,7 +591,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         factors.indices.forEach { i ->
             if (i != 0) {
                 out.write(
-                    "+" + " ".repeat(factors.lastIndex - i)
+                    "+" + " ".repeat(lineLength - digitNumber(factors[factors.lastIndex - i]) - i - 1)
                             + factors[factors.lastIndex - i]
                 )
                 out.newLine()
