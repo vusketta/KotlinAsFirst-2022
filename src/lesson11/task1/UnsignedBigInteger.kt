@@ -125,7 +125,9 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
     /**
      * Умножение
      */
-    operator fun times(other: UnsignedBigInteger): UnsignedBigInteger {
+    operator fun times(other: UnsignedBigInteger): UnsignedBigInteger = TODO()
+
+    /*operator fun times(other: UnsignedBigInteger): UnsignedBigInteger {
         if (isZero || other.isZero) return UnsignedBigInteger(0)
         if (this == BASE) return other.timesBase()
         if (other == BASE) return this.timesBase()
@@ -145,8 +147,7 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
             }
         }
         return result
-    } //TODO DOESN'T WORK AT ALL
-
+    }
     private fun timesSimple(a: UnsignedBigInteger, b: UnsignedBigInteger): UnsignedBigInteger {
         if (b == ONE) return a
         var result = UnsignedBigInteger(0)
@@ -164,7 +165,7 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
         result.mag.addAll(mag)
         return result
     }
-
+*/
     /**
      * Деление
      */

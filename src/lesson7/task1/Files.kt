@@ -296,7 +296,8 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         text.forEach {
             if (it.lowercaseChar() in dict.keys) {
                 out.append(
-                    if (it.isUpperCase()) dict[it.lowercaseChar()]!!.replaceFirstChar { c -> c.uppercase() }
+                    if (it.isUpperCase()) dict[it.lowercaseChar()]!!
+                        .replaceFirstChar { c -> c.uppercase() }
                     else dict[it]!!)
             } else out.append(it)
         }
@@ -512,6 +513,24 @@ fun String.parseMarkdownSimple(): String {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать необязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
+    val lines = File(inputName).readLines()
+    var prevSpaces = 0
+    val sb = StringBuilder("<html><body><p>")
+    lines.forEach {
+        val char = it.first { c -> !c.isWhitespace() }
+        val currSpaces = it.indexOf(char)
+        when {
+            prevSpaces == currSpaces ->
+                sb.append("<li>${it.substring(currSpaces)}</li>")
+
+            prevSpaces < currSpaces -> {}
+        }
+        prevSpaces = currSpaces
+    }
+    sb.append("</p></body></html>")
+    File(outputName).bufferedWriter().use { out ->
+        out.write(sb.toString())
+    }
     TODO()
 }
 

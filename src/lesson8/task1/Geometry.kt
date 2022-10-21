@@ -80,7 +80,8 @@ data class Circle(val center: Point, val radius: Double) {
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
     fun isIntersect(other: Circle) =
-        this.contains(other.center) || other.contains(center)
+        abs(radius - other.radius) <= center.distance(other.center)
+                && center.distance(other.center) <= radius + other.radius
 
     fun distance(other: Circle): Double = if (isIntersect(other)) 0.0 else
         center.distance(other.center) - radius - other.radius
