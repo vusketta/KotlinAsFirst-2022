@@ -1,8 +1,6 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import kotlin.math.floor
-import kotlin.math.min
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -295,7 +293,7 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun checkCorrectBracketSequences(str: String): Boolean {
-    val brackets = str.filterNot { it in " ><+-" }
+    val brackets = str.filter { it in "[]" }
     var counter = 0
     brackets.forEach {
         if (it == '[') counter++ else counter--
@@ -309,33 +307,40 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         || !checkCorrectBracketSequences(commands)
     ) throw IllegalArgumentException()
     val conveyor = MutableList(cells) { 0 }
-    val n = min(limit, commands.length)
-    var index = floor(cells / 2.0).toInt()
-    var i = 0
-    while (i < n) {
+    var (i, j, depth, counter) = listOf(0, (cells / 2.0).toInt(), 0, 1)
+    while (true) {
         when (commands[i]) {
-            '<' -> index--
-            '>' -> index++
-            '+' -> conveyor[index]++
-            '-' -> conveyor[index]--
-            '[' -> {
-                if (conveyor[index] == 0) {
-                    while (commands[i] != ']') i++
-                    i++
+            '<' -> j--
+            '>' -> j++
+            '+' -> conveyor[j]++
+            '-' -> conveyor[j]--
+            '[' -> if (conveyor[j] == 0) {
+                depth++
+                while (depth > 0) {
+                    when (commands[++i]) {
+                        '[' -> depth++
+                        ']' -> depth--
+                        else -> {}
+                    }
                 }
             }
 
-            ']' -> {
-                if (conveyor[index] != 0) {
-                    while (commands[i] != '[') i--
-                    i--
+            ']' -> if (conveyor[j] != 0) {
+                depth = 1
+                while (depth > 0) {
+                    when (commands[--i]) {
+                        '[' -> depth--
+                        ']' -> depth++
+                        else -> {}
+                    }
                 }
+                i--
+                counter--
             }
 
             else -> {}
         }
-        if (i !in commands.indices) throw IllegalStateException()
-        i++
+        if (limit < ++counter || ++i >= commands.length) return conveyor
+        if (j !in 0 until cells) throw IllegalStateException()
     }
-    return conveyor
 }

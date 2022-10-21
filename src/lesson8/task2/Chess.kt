@@ -236,13 +236,17 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int {
-    val rowDifference = abs(start.row - end.row)
-    val columnDifference = abs(start.column - end.column)
-    val max = listOf(
-        rowDifference / 2.0, columnDifference / 2.0, (rowDifference + columnDifference) / 3.0
-    ).max().roundToInt()
-    return max + (max + rowDifference + columnDifference) % 2
+fun knightMoveNumber(start: Square, end: Square): Int = when {
+    !start.inside() || !end.inside() -> throw IllegalArgumentException()
+    start == end -> 0
+    else -> {
+        val rowDifference = abs(start.row - end.row)
+        val columnDifference = abs(start.column - end.column)
+        val max = listOf(
+            rowDifference / 2.0, columnDifference / 2.0, (rowDifference + columnDifference) / 3.0
+        ).max().roundToInt()
+        max + (max + rowDifference + columnDifference) % 2
+    }
 }
 
 /**
