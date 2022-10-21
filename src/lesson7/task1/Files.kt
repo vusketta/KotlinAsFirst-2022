@@ -2,6 +2,8 @@
 
 package lesson7.task1
 
+import lesson3.task1.digitNumber
+import lesson4.task1.pow
 import java.io.File
 import kotlin.math.max
 
@@ -572,7 +574,33 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val lhvLength = digitNumber(lhv)
+    val rhvLength = digitNumber(rhv)
+    val factors = rhv.toString().map { d -> lhv * (d - '0') }
+    val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
+    val lineLength = maxOf(rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
+    File(outputName).bufferedWriter().use { out ->
+        out.write(" ".repeat(lineLength - lhvLength) + lhv)
+        out.newLine()
+        out.write("*" + " ".repeat(lineLength - rhvLength - 1) + rhv)
+        out.newLine()
+        out.write("-".repeat(lineLength))
+        out.newLine()
+        out.write(" ".repeat(lineLength - digitNumber(factors.last())) + factors.last())
+        out.newLine()
+        factors.indices.forEach { i ->
+            if (i != 0) {
+                out.write(
+                    "+" + " ".repeat(factors.lastIndex - i)
+                            + factors[factors.lastIndex - i]
+                )
+                out.newLine()
+            }
+        }
+        out.write("-".repeat(lineLength))
+        out.newLine()
+        out.write(" ".repeat(lineLength - digitNumber(product)) + product)
+    }
 }
 
 
