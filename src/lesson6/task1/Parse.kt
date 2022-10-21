@@ -341,7 +341,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
             else -> {}
         }
-        if (limit < ++counter || ++i >= commands.length) return conveyor
         if (j !in 0 until cells) throw IllegalStateException()
+        if (limit < ++counter || ++i >= commands.length) return conveyor
     }
 }
