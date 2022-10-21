@@ -42,7 +42,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    if (notation.length != 2) throw IllegalArgumentException()
+    if (notation.length != 2 || !notation.matches(Regex("[a-h][1-8]"))) throw IllegalArgumentException()
     val newNotation = Pair(
         mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6, 'g' to 7, 'h' to 8)[notation[0]],
         notation[1].digitToInt()
@@ -191,8 +191,11 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMov
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int =
-    max(abs(start.row - end.row), abs(start.column - end.column))
+fun kingMoveNumber(start: Square, end: Square): Int = when {
+    !start.inside() || !end.inside() -> throw IllegalArgumentException()
+    start == end -> 0
+    else -> max(abs(start.row - end.row), abs(start.column - end.column))
+}
 
 /**
  * Сложная (5 баллов)
