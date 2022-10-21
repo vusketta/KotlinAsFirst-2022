@@ -286,7 +286,7 @@ fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
     for (i in 1 until matrix.height) matrix[i, 0] += matrix[i - 1, 0]
     matrix.forEach { (i, j), _ ->
         if (0 < i && i < matrix.height &&
-            0 < j && j < matrix.height
+            0 < j && j < matrix.width
         ) matrix[i, j] += matrix[i - 1, j] + matrix[i, j - 1] - matrix[i - 1, j - 1]
     }
     return matrix
