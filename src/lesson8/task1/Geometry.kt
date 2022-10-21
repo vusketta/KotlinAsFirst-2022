@@ -83,8 +83,9 @@ data class Circle(val center: Point, val radius: Double) {
         abs(radius - other.radius) <= center.distance(other.center)
                 && center.distance(other.center) <= radius + other.radius
 
-    fun distance(other: Circle): Double = if (isIntersect(other)) 0.0 else
-        center.distance(other.center) - radius - other.radius
+    fun distance(other: Circle): Double =
+        if (isIntersect(other) || center.distance(other.center) - radius - other.radius < 0) 0.0
+        else center.distance(other.center) - radius - other.radius
 
     /**
      * Тривиальная (1 балл)
