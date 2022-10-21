@@ -123,7 +123,7 @@ fun dateDigitToStr(digital: String): String {
  */
 
 fun flattenPhoneNumber(phone: String): String =
-    if (phone.matches(Regex("""(\+\d*)?\s*(\([\s\-\d]+\))?[\s\-\d]*""")))
+    if (phone.matches(Regex("""(\+\d+)?\s*(\([\s\-\d]+\))?[\s\-\d]*""")))
         phone.filterNot { it in "()-" || it.isWhitespace() } else ""
 
 /**
@@ -307,6 +307,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         || !checkCorrectBracketSequences(commands)
     ) throw IllegalArgumentException()
     val conveyor = MutableList(cells) { 0 }
+    if (commands.isEmpty()) return conveyor
     var (i, j, depth, counter) = listOf(0, (cells / 2.0).toInt(), 0, 1)
     while (true) {
         when (commands[i]) {
