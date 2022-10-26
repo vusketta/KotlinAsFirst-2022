@@ -1,6 +1,6 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson12.task1
+
+import kotlin.math.abs
 
 /**
  * Класс "табличная функция".
@@ -14,11 +14,12 @@ package lesson12.task1
  * Класс должен иметь конструктор по умолчанию (без параметров).
  */
 class TableFunction {
+    private val table = HashMap<Double, Double>()
 
     /**
      * Количество пар в таблице
      */
-    val size: Int get() = TODO()
+    val size: Int get() = table.size
 
     /**
      * Добавить новую пару.
@@ -26,7 +27,9 @@ class TableFunction {
      * или false, если она уже есть (в этом случае перезаписать значение y)
      */
     fun add(x: Double, y: Double): Boolean {
-        TODO()
+        val isExist = table.containsKey(x)
+        table[x] = y
+        return isExist
     }
 
     /**
@@ -34,20 +37,24 @@ class TableFunction {
      * Вернуть true, если пара была удалена.
      */
     fun remove(x: Double): Boolean {
-        TODO()
+        val isExist = table.containsKey(x)
+        table.remove(x)
+        return isExist
     }
 
     /**
      * Вернуть коллекцию из всех пар в таблице
      */
-    fun getPairs(): Collection<Pair<Double, Double>> = TODO()
+    fun getPairs(): Collection<Pair<Double, Double>> = table.entries.map { it.toPair() }
 
     /**
      * Вернуть пару, ближайшую к заданному x.
      * Если существует две ближайшие пары, вернуть пару с меньшим значением x.
      * Если таблица пуста, бросить IllegalStateException.
      */
-    fun findPair(x: Double): Pair<Double, Double>? = TODO()
+    fun findPair(x: Double): Pair<Double, Double>? =
+        if (table.isEmpty()) throw IllegalStateException()
+        else table.entries.minBy { abs(it.key - x) }.toPair()
 
     /**
      * Вернуть значение y по заданному x.
@@ -57,7 +64,13 @@ class TableFunction {
      * Если существуют две пары, такие, что x1 < x < x2, использовать интерполяцию.
      * Если их нет, но существуют две пары, такие, что x1 < x2 < x или x > x2 > x1, использовать экстраполяцию.
      */
-    fun getValue(x: Double): Double = TODO()
+    fun getValue(x: Double): Double = when {
+        table.isEmpty() -> throw IllegalStateException()
+        table.size == 1 -> table.values.first()
+        else -> {
+            TODO()
+        }
+    }
 
     /**
      * Таблицы равны, если в них одинаковое количество пар,

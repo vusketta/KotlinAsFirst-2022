@@ -30,7 +30,7 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
     /**
      * Конструктор из строки. Формат строки: значение пробел размерность (1 Kg, 3 mm, 100 g и так далее).
      */
-    constructor(s: String) : this(TODO(), TODO())
+    constructor(s: String) : this(s.filter { it.isDigit() }.toDouble(), s.filterNot { it.isDigit() })
 
     /**
      * Сложение с другой величиной. Если базовая размерность разная, бросить IllegalArgumentException

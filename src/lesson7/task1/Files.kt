@@ -66,19 +66,17 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    File(inputName).forEachLine { line ->
-        when {
-            line.isEmpty() -> writer.newLine()
-            !line.startsWith("_") -> {
-                writer.write(line)
-                writer.newLine()
+    File(outputName).bufferedWriter().use { out ->
+        File(inputName).forEachLine { line ->
+            when {
+                line.isEmpty() -> out.newLine()
+                !line.startsWith("_") -> {
+                    out.write(line)
+                    out.newLine()
+                }
             }
-
-            else -> {}
         }
     }
-    writer.close()
 }
 
 /**
@@ -92,16 +90,14 @@ fun deleteMarked(inputName: String, outputName: String) {
  */
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    fun countMatches(string: String, substring: String): Int = when {
-        string.isEmpty() || substring.isEmpty() || string.length < substring.length -> 0
-        string == substring -> 1
-        else -> {
-            var count = 0
-            for (i in 0..string.length - substring.length) {
-                if (string.substring(i, i + substring.length) == substring) count++
-            }
-            count
+    fun countMatches(string: String, substring: String): Int {
+        if (string.isEmpty() || substring.isEmpty()) return 0
+        var (count, i) = 0 to 0
+        while (string.indexOf(substring, i) != -1) {
+            i = string.indexOf(substring, i) + 1
+            count++
         }
+        return count
     }
 
     val text = File(inputName).readText().lowercase()
@@ -158,18 +154,18 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
     val lines = File(inputName).readLines()
-    if (lines.isEmpty()) writer.write("")
-    else {
-        val maxLength = lines.maxByOrNull { it.trim().length }!!.trim().length
-        lines.forEach {
-            writer.write(" ".repeat((maxLength - it.trim().length) / 2))
-            writer.write(it.trim())
-            writer.newLine()
+    File(outputName).bufferedWriter().use { out ->
+        if (lines.isEmpty()) out.write("")
+        else {
+            val maxLength = lines.maxOf { it.trim().length }
+            lines.forEach {
+                out.write(" ".repeat((maxLength - it.trim().length) / 2))
+                out.write(it.trim())
+                out.newLine()
+            }
         }
     }
-    writer.close()
 }
 
 /**
@@ -200,30 +196,27 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    val lines = File(inputName).readLines()
-        .map { it.replace(Regex("""\s+"""), " ").trim() }
-    try {
-        val maxLength = lines.maxByOrNull { it.length }!!.length
-        lines.forEach { line ->
-            val words = line.split(" ").toMutableList()
-            when {
-                words.size == 1 -> writer.write(line)
-                line.isNotBlank() -> {
-                    var i = 0
-                    repeat(maxLength - line.length) {
-                        words[i] += " "
-                        i = if (i + 2 < words.size) i + 1 else 0
+    File(outputName).bufferedWriter().use { out ->
+        val lines = File(inputName).readLines().map { it.trim() }
+        if (lines.isEmpty()) out.write("")
+        else {
+            val maxLength = lines.maxOf { it.length }
+            lines.forEach { line ->
+                val words = line.split(Regex("""\s+""")).toMutableList()
+                when {
+                    words.size == 1 -> out.write(line)
+                    line.isNotBlank() -> {
+                        var i = 0
+                        repeat(maxLength - line.length) {
+                            words[i] += " "
+                            i = (i + 1) % words.lastIndex
+                        }
+                        out.write(words.joinToString(" "))
                     }
-                    writer.write(words.joinToString(" "))
                 }
+                out.newLine()
             }
-            writer.newLine()
         }
-    } catch (e: Exception) {
-        writer.write("")
-    } finally {
-        writer.close()
     }
 }
 
@@ -248,7 +241,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  *
  */
 fun top20Words(inputName: String): Map<String, Int> {
-    val frequencies = Regex("""\p{LC}+""").findAll(File(inputName).readText().lowercase())
+    val frequencies = Regex("""[a-zA-Zа-яёА-ЯЁ]+""").findAll(File(inputName).readText().lowercase())
         .map { it.value }.groupBy { it }.map { it.key to it.value.count() }
         .sortedByDescending { (_, v) -> v }.toMap()
     return if (frequencies.size < 21) frequencies else

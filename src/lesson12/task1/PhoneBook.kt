@@ -16,7 +16,7 @@ package lesson12.task1
  * Класс должен иметь конструктор по умолчанию (без параметров).
  */
 class PhoneBook {
-    private val hashMap = HashMap<String, MutableList<String>>()
+    private val phones = HashMap<String, MutableSet<String>>()
 
     /**
      * Добавить человека.
@@ -25,8 +25,8 @@ class PhoneBook {
      * (во втором случае телефонная книга не должна меняться).
      */
     fun addHuman(name: String): Boolean {
-        if (hashMap.containsKey(name)) return false
-        hashMap[name] = mutableListOf()
+        if (phones.containsKey(name)) return false
+        phones[name] = mutableSetOf()
         return true
     }
 
@@ -37,8 +37,8 @@ class PhoneBook {
      * (во втором случае телефонная книга не должна меняться).
      */
     fun removeHuman(name: String): Boolean {
-        if (!hashMap.containsKey(name)) return false
-        hashMap.remove(name)
+        if (!phones.containsKey(name)) return false
+        phones.remove(name)
         return true
     }
 
@@ -50,8 +50,8 @@ class PhoneBook {
      * либо такой номер телефона зарегистрирован за другим человеком.
      */
     fun addPhone(name: String, phone: String): Boolean {
-        if (!hashMap.containsKey(name) || hashMap.values.any { it.contains(phone) }) return false
-        hashMap[name]!!.add(phone)
+        if (!phones.containsKey(name) || phones.values.any { it.contains(phone) }) return false
+        phones[name]!!.add(phone)
         return true
     }
 
@@ -62,8 +62,8 @@ class PhoneBook {
      * либо у него не было такого номера телефона.
      */
     fun removePhone(name: String, phone: String): Boolean {
-        if (!hashMap.keys.contains(name) || hashMap[name]?.contains(phone) == false) return false
-        hashMap[name]!!.remove(phone)
+        if (!phones.containsKey(name) || !phones[name]!!.contains(phone)) return false
+        phones[name]!!.remove(phone)
         return true
     }
 
@@ -71,13 +71,13 @@ class PhoneBook {
      * Вернуть все номера телефона заданного человека.
      * Если этого человека нет в книге, вернуть пустой список
      */
-    fun phones(name: String): Set<String> = hashMap[name]!!.toSet()
+    fun phones(name: String): Set<String> = phones[name]!!
 
     /**
      * Вернуть имя человека по заданному номеру телефона.
      * Если такого номера нет в книге, вернуть null.
      */
-    fun humanByPhone(phone: String): String? = hashMap.filterValues { it.contains(phone) }.keys.firstOrNull()
+    fun humanByPhone(phone: String): String? = phones.filterValues { it.contains(phone) }.keys.firstOrNull()
 
     /**
      * Две телефонные книги равны, если в них хранится одинаковый набор людей,
@@ -85,12 +85,12 @@ class PhoneBook {
      * Порядок людей / порядок телефонов в книге не должен иметь значения.
      */
     override fun equals(other: Any?): Boolean {
-        if (other !is PhoneBook || this.hashMap.keys != other.hashMap.keys) return false
-        for (k in this.hashMap.keys) {
-            if (this.hashMap[k]!!.sorted() != other.hashMap[k]!!.sorted()) return false
+        if (other !is PhoneBook || phones.keys != other.phones.keys) return false
+        phones.keys.forEach { k ->
+            if (phones[k]!!.sorted() != other.phones[k]!!.sorted()) return false
         }
         return true
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int = phones.hashCode()
 }

@@ -7,8 +7,7 @@ import lesson1.task1.sqr
  */
 fun Complex(s: String): Complex {
     val reim = s.removeSuffix("i").replace("-", " -")
-        .replace("+", " +").removePrefix(" ")
-        .split(" ").map { it.toDouble() }
+        .replace("+", " +").split(" ").map { it.toDouble() }
     return Complex(reim.first(), reim.last())
 }
 
@@ -71,12 +70,13 @@ class Complex(val re: Double, val im: Double) {
     /**
      * Сравнение на равенство
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean =
+        other is Complex && re == other.re && im == other.im
 
     /**
      * Преобразование в строку
      */
-    override fun toString(): String = TODO()
+    override fun toString(): String = "$re+${im}i"
     override fun hashCode(): Int {
         var result = re.hashCode()
         result = 31 * result + im.hashCode()
