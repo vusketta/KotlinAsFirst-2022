@@ -5,7 +5,6 @@ package lesson7.task1
 import lesson3.task1.digitNumber
 import lesson4.task1.pow
 import java.io.File
-import kotlin.math.max
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -88,24 +87,23 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
+fun countMatches(string: String, substring: String): Int {
+    if (string.isEmpty() || substring.isEmpty()) return 0
+    var (count, i) = 0 to 0
+    while (string.indexOf(substring, i) != -1) {
+        i = string.indexOf(substring, i) + 1
+        count++
+    }
+    return count
+}
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    fun countMatches(string: String, substring: String): Int {
-        if (string.isEmpty() || substring.isEmpty()) return 0
-        var (count, i) = 0 to 0
-        while (string.indexOf(substring, i) != -1) {
-            i = string.indexOf(substring, i) + 1
-            count++
-        }
-        return count
-    }
-
     val text = File(inputName).readText().lowercase()
     val map = mutableMapOf<String, Int>()
     substrings.forEach {
         map[it] = countMatches(text, it.lowercase())
     }
-    return map.toMap()
+    return map
 }
 
 /**
@@ -289,12 +287,12 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     dictionary.forEach { (t, u) -> dict[t.lowercaseChar()] = u.lowercase() }
     File(outputName).bufferedWriter().use { out ->
         text.forEach {
-            if (it.lowercaseChar() in dict.keys) {
-                out.append(
-                    if (it.isUpperCase()) dict[it.lowercaseChar()]!!
-                        .replaceFirstChar { c -> c.uppercase() }
-                    else dict[it]!!)
-            } else out.append(it)
+            val replacement = dict[it.lowercaseChar()]
+            out.append(when {
+                replacement == null -> it.toString()
+                it.isUpperCase() -> replacement.replaceFirstChar { c -> c.uppercase() }
+                else -> replacement
+            })
         }
     }
 }
@@ -324,20 +322,11 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    val list = File(inputName).readLines()
-    var maxLength = 0
-    list.filter {
-        it.lowercase().toSet().size == it.length
-    }.forEach {
-        maxLength = max(maxLength, it.lowercase().toSet().size)
+    File(outputName).bufferedWriter().use { out ->
+        val list = File(inputName).readLines().filter { it.lowercase().toSet().size == it.length }
+        val maxLength = list.maxOf { it.length }
+        out.write(list.filter { maxLength == it.length }.joinToString())
     }
-    writer.write(
-        list.filter {
-            it.lowercase().toSet().size == maxLength && maxLength == it.length
-        }.joinToString()
-    )
-    writer.close()
 }
 
 /**

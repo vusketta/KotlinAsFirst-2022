@@ -13,7 +13,7 @@ class Tests {
         try {
             parseExpr("input/expr_in3.txt", listOf(0))
             throw AssertionError("NumberFormatException expected")
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         assertEquals(
             mapOf(-2 to 12, -1 to 2, 0 to 0, 1 to 0, 2 to -4),
@@ -39,5 +39,12 @@ class Tests {
             mapOf(0 to 1, 1 to 0, 2 to 5, 3 to 28),
             parseExpr("input/expr_pow3.txt", listOf(0, 1, 2, 3))
         )
+    }
+
+    @Test
+    @Tag("-1")
+    fun parseDiff() {
+        assertEquals(mapOf(1 to 6, 2 to 12, -1 to -6), parseDiff("input/diff_in1.txt", listOf(1, 2, -1)))
+        assertEquals(mapOf(1 to 7, 2 to 11, -1 to -5), parseDiff("input/expr_in1.txt", listOf(1, 2, -1)))
     }
 }

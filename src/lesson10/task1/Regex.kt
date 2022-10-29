@@ -67,7 +67,7 @@ sealed class Expression {
     class Negate(val arg: Expression) : Expression()
 
     fun calculate(x: Int): Int = when (this) {
-        Variable -> x
+        is Variable -> x
         is Constant -> value
         is Binary -> when (op) {
             PLUS -> {
@@ -92,6 +92,33 @@ sealed class Expression {
         }
 
         is Negate -> -arg.calculate(x)
+    }
+
+    fun differentiate(x: Int): Int = when (this) {
+        is Variable -> 1
+        is Constant -> 0
+        is Binary -> when (op) {
+            PLUS -> {
+                left.differentiate(x) + right.differentiate(x)
+            }
+
+            MINUS -> {
+                left.differentiate(x) - right.differentiate(x)
+            }
+
+            TIMES -> {
+                left.differentiate(x) * right.calculate(x) + left.calculate(x) * right.differentiate(x)
+            }
+
+            DIV -> {
+                left.differentiate(x) * right.calculate(x) - left.calculate(x) * right.differentiate(x) /
+                        right.calculate(x) / right.calculate(x)
+            }
+
+            POW -> -1
+        }
+
+        is Negate -> -arg.differentiate(x)
     }
 }
 
@@ -177,4 +204,13 @@ class Parser(private val groups: List<String>) {
     }
 
     private val operationMap = mapOf("+" to PLUS, "-" to MINUS, "*" to TIMES, "/" to DIV, "^" to POW)
+}
+
+fun parseDiff(inputName: String, values: List<Int>): Map<Int, Int> {
+    val expr = File(inputName).readLines().firstOrNull()?.parseExpr() ?: throw IllegalArgumentException()
+    val result = mutableMapOf<Int, Int>()
+    for (value in values) {
+        result[value] = expr.differentiate(value)
+    }
+    return result
 }
