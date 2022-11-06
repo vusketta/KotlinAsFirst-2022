@@ -204,12 +204,12 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                 when {
                     words.size == 1 -> out.write(line)
                     line.isNotBlank() -> {
-                        val spaces = (maxLength - line.length) / words.lastIndex
+                        val spaces = (maxLength - line.length) / words.lastIndex + 1
                         val remain = (maxLength - line.length) % words.lastIndex
                         for (i in 0 until words.lastIndex) {
-                            words[i] += " ".repeat(if (i >= remain) spaces else spaces + 1)
+                            words[i] += " ".repeat(if (i < remain) spaces + 1 else spaces)
                         }
-                        out.write(words.joinToString(" "))
+                        out.write(words.joinToString(""))
                     }
                 }
                 out.newLine()
