@@ -204,10 +204,10 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                 when {
                     words.size == 1 -> out.write(line)
                     line.isNotBlank() -> {
-                        var i = 0
-                        repeat(maxLength - line.length) {
-                            words[i] += " "
-                            i = (i + 1) % words.lastIndex
+                        val spaces = (maxLength - line.length) / words.lastIndex
+                        val remain = (maxLength - line.length) % words.lastIndex
+                        for (i in 0 until words.lastIndex) {
+                            words[i] += " ".repeat(if (i >= remain) spaces else spaces + 1)
                         }
                         out.write(words.joinToString(" "))
                     }
@@ -324,8 +324,11 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use { out ->
         val list = File(inputName).readLines().filter { it.lowercase().toSet().size == it.length }
-        val maxLength = list.maxOf { it.length }
-        out.write(list.filter { maxLength == it.length }.joinToString())
+        if (list.isEmpty()) out.write("")
+        else {
+            val maxLength = list.maxOf { it.length }
+            out.write(list.filter { maxLength == it.length }.joinToString())
+        }
     }
 }
 
@@ -562,9 +565,9 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
     val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
     File(outputName).bufferedWriter().use { out ->
-        out.write(" ".repeat(lineLength - lhvLength) + lhv)
+        out.write("$lhv".padEnd(lineLength - lhvLength, ' '))
         out.newLine()
-        out.write("*" + " ".repeat(lineLength - rhvLength - 1) + rhv)
+        out.write("*" + "$rhv".padStart(lineLength - rhvLength - 1, ' '))
         out.newLine()
         out.write("-".repeat(lineLength))
         out.newLine()
