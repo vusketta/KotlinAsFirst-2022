@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson8.task1
 
 import lesson1.task1.sqr
@@ -79,13 +77,9 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun isIntersect(other: Circle) =
-        abs(radius - other.radius) <= center.distance(other.center)
-                && center.distance(other.center) <= radius + other.radius
 
     fun distance(other: Circle): Double =
-        if (isIntersect(other) || center.distance(other.center) - radius - other.radius < 0) 0.0
-        else center.distance(other.center) - radius - other.radius
+        max(center.distance(other.center) - radius - other.radius, 0.0)
 
     /**
      * Тривиальная (1 балл)
@@ -120,7 +114,7 @@ fun diameter(vararg points: Point): Segment {
             if (fIndex != sIndex) pairs.add(fPoint to sPoint)
         }
     }
-    val pair = pairs.maxByOrNull { it.first.distance(it.second) }!!
+    val pair = pairs.maxBy { it.first.distance(it.second) }
     return Segment(pair.first, pair.second)
 }
 
@@ -187,10 +181,8 @@ fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line {
-    val k = (atan((a.y - b.y) / (a.x - b.x)))
-    return Line(a, if (k < 0) k + PI else k)
-}
+fun lineByPoints(a: Point, b: Point): Line =
+    Line(a, (atan2(a.y - b.y, a.x - b.x) + PI) % PI)
 
 /**
  * Сложная (5 баллов)
@@ -219,7 +211,7 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
             if (fIndex != sIndex) pairs.add(fCircle to sCircle)
         }
     }
-    return pairs.minByOrNull { it.first.distance(it.second) }!!
+    return pairs.minBy { it.first.distance(it.second) }
 }
 
 /**

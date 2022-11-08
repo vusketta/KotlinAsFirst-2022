@@ -50,7 +50,7 @@ class PhoneBook {
      * либо такой номер телефона зарегистрирован за другим человеком.
      */
     fun addPhone(name: String, phone: String): Boolean {
-        if (!phones.containsKey(name) || phones.values.any { it.contains(phone) }) return false
+        if (!phones.containsKey(name) || humanByPhone(phone) != null) return false
         phones[name]!!.add(phone)
         return true
     }
@@ -87,7 +87,7 @@ class PhoneBook {
     override fun equals(other: Any?): Boolean {
         if (other !is PhoneBook || phones.keys != other.phones.keys) return false
         phones.keys.forEach { k ->
-            if (phones[k]!!.sorted() != other.phones[k]!!.sorted()) return false
+            if (phones[k]!! != other.phones[k]!!) return false
         }
         return true
     }

@@ -21,14 +21,14 @@ import kotlin.math.pow
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
 class Polynom(vararg coeffs: Double) {
-    private val data: MutableList<Double>
+    private val data: DoubleArray
 
     init {
         val nonZeroIndex = coeffs.indexOfFirst { it != 0.0 }
-        data = coeffs.asList().subList(
-            if (nonZeroIndex == -1) 0 else nonZeroIndex, coeffs.size
-        ).reversed().toMutableList()
-        if (data.isEmpty()) data.add(0.0)
+        data = if (coeffs.isEmpty()) doubleArrayOf(0.0) else
+            coeffs.copyOfRange(
+                if (nonZeroIndex == -1) 0 else nonZeroIndex, coeffs.size
+            ).reversedArray()
     }
 
     /**
@@ -39,8 +39,7 @@ class Polynom(vararg coeffs: Double) {
     /**
      * Расчёт значения при заданном x
      */
-    fun getValue(x: Double): Double = List(data.size) { x }
-        .mapIndexed { index, d -> coeff(index) * d.pow(index) }.sum()
+    fun getValue(x: Double): Double = data.indices.sumOf { coeff(it) * x.pow(it) }
 
     /**
      * Степень (максимальная степень x при ненулевом слагаемом, например 2 для x^2+x+1).
@@ -49,7 +48,7 @@ class Polynom(vararg coeffs: Double) {
      * Слагаемые с нулевыми коэффициентами игнорировать, т.е.
      * степень 0x^2+0x+2 также равна 0.
      */
-    fun degree(): Int = max(0, data.size - 1)
+    fun degree(): Int = max(0, data.lastIndex)
 
     /**
      * Сложение
@@ -64,9 +63,7 @@ class Polynom(vararg coeffs: Double) {
      * Смена знака (при всех слагаемых)
      */
     operator fun unaryMinus(): Polynom = Polynom(
-        *DoubleArray(this.data.size) {
-            -this.data[it]
-        }.reversedArray()
+        *DoubleArray(this.data.size) { -this.data[it] }.reversedArray()
     )
 
     /**
@@ -106,10 +103,10 @@ class Polynom(vararg coeffs: Double) {
      * Сравнение на равенство
      */
     override fun equals(other: Any?): Boolean =
-        other is Polynom && data == other.data
+        other is Polynom && data.contentEquals(other.data)
 
     /**
      * Получение хеш-кода
      */
-    override fun hashCode(): Int = data.hashCode()
+    override fun hashCode(): Int = data.contentHashCode()
 }

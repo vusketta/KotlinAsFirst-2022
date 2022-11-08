@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
-
 package lesson5.task1
 
 // Урок 5: ассоциативные массивы и множества

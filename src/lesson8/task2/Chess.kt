@@ -28,7 +28,7 @@ data class Square(val column: Int, val row: Int) {
      * В нотации, колонки обозначаются латинскими буквами от a до h, а ряды -- цифрами от 1 до 8.
      * Для клетки не в пределах доски вернуть пустую строку
      */
-    fun notation(): String = if (inside()) String.format("%c$row", ('a'..'h').toList()[column - 1]) else ""
+    fun notation(): String = if (inside()) "${'a' + column - 1}$row" else ""
 
     fun equalsColumn(other: Square) = column == other.column
     fun equalsRow(other: Square) = row == other.row
@@ -42,13 +42,9 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    if (notation.length != 2 || !notation.matches(Regex("[a-h][1-8]"))) throw IllegalArgumentException()
-    val newNotation = Pair(
-        mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6, 'g' to 7, 'h' to 8)[notation[0]],
-        notation[1].digitToInt()
-    )
-    val newSquare = newNotation.first?.let { Square(it, newNotation.second) }
-    return if (newSquare!!.inside()) newSquare else throw IllegalArgumentException()
+    if (!notation.matches(Regex("[a-h][1-8]"))) throw IllegalArgumentException()
+    val square = Square(notation[0] - 'a' + 1, notation[1].digitToInt())
+    return if (square.inside()) square else throw IllegalArgumentException()
 }
 
 /**

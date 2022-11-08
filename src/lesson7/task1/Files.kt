@@ -88,7 +88,6 @@ fun deleteMarked(inputName: String, outputName: String) {
  *
  */
 fun countMatches(string: String, substring: String): Int {
-    if (string.isEmpty() || substring.isEmpty()) return 0
     var (count, i) = 0 to 0
     while (string.indexOf(substring, i) != -1) {
         i = string.indexOf(substring, i) + 1
@@ -565,7 +564,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
     val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
     File(outputName).bufferedWriter().use { out ->
-        out.write("$lhv".padEnd(lineLength - lhvLength, ' '))
+        out.write("$lhv".padEnd(lineLength - lhvLength + 1, ' '))
         out.newLine()
         out.write("*" + "$rhv".padStart(lineLength - rhvLength - 1, ' '))
         out.newLine()

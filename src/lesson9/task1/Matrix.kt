@@ -107,9 +107,6 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : M
         return stringBuilder.append("]").toString()
     }
 
-    override fun hashCode(): Int {
-        var result = height
-        result = 31 * result + width
-        return result
-    }
+    override fun hashCode(): Int =
+        31 * (31 * height + width) + data.hashCode()
 }

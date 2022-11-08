@@ -63,7 +63,8 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиусом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = TODO()
+    fun distance(other: Hexagon): Int =
+        center.distance(other.center) - radius - other.radius
 
     /**
      * Тривиальная (1 балл)
@@ -85,7 +86,8 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * Такими являются, например, отрезок 30-34 (горизонталь), 13-63 (прямая диагональ) или 51-24 (косая диагональ).
      * А, например, 13-26 не является "правильным" отрезком.
      */
-    fun isValid(): Boolean = TODO()
+    fun isValid(): Boolean =
+        begin.x == end.x || begin.y == end.y || begin.x + begin.y == end.x + end.y
 
     /**
      * Средняя (3 балла)
@@ -94,7 +96,15 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * Для "правильного" отрезка выбирается одно из первых шести направлений,
      * для "неправильного" -- INCORRECT.
      */
-    fun direction(): Direction = TODO()
+    fun direction(): Direction = when {
+        begin.x < end.x && begin.y == end.y -> Direction.RIGHT
+        begin.x == end.x && begin.y < end.y -> Direction.UP_RIGHT
+        begin.x + begin.y == end.x + end.y && begin.y < end.y -> Direction.UP_LEFT
+        begin.x > end.x && begin.y == end.y -> Direction.LEFT
+        begin.x == end.x && begin.y > end.y -> Direction.DOWN_LEFT
+        begin.x + begin.y == end.x + end.y && begin.y > end.y -> Direction.DOWN_RIGHT
+        else -> Direction.INCORRECT
+    }
 
     override fun equals(other: Any?) =
         other is HexSegment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
@@ -152,8 +162,8 @@ enum class Direction {
      * Вернуть true, если данное направление совпадает с other или противоположно ему.
      * INCORRECT не параллельно никакому направлению, в том числе другому INCORRECT.
      */
-    fun isParallel(other: Direction): Boolean = if (INCORRECT in listOf(this, other)) false else
-        this in listOf(other, other.opposite())
+    fun isParallel(other: Direction): Boolean = if (this == INCORRECT || other == INCORRECT) false else
+        this == other || this == other.opposite()
 }
 
 /**
@@ -169,7 +179,15 @@ enum class Direction {
  * 35, direction = UP_LEFT, distance = 2 --> 53
  * 45, direction = DOWN_LEFT, distance = 4 --> 05
  */
-fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
+fun HexPoint.move(direction: Direction, distance: Int): HexPoint = when (direction) {
+    Direction.RIGHT -> HexPoint(x + distance, y)
+    Direction.UP_RIGHT -> HexPoint(x, y + distance)
+    Direction.UP_LEFT -> HexPoint(x - distance, y + distance)
+    Direction.LEFT -> HexPoint(x - distance, y)
+    Direction.DOWN_LEFT -> HexPoint(x, y - distance)
+    Direction.DOWN_RIGHT -> HexPoint(x + distance, y - distance)
+    Direction.INCORRECT -> throw IllegalArgumentException()
+}
 
 /**
  * Сложная (5 баллов)
