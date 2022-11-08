@@ -6,6 +6,7 @@ import lesson2.task1.bishopMove
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.math.sign
 
 
 /**
@@ -207,7 +208,19 @@ fun kingMoveNumber(start: Square, end: Square): Int = when {
  *          kingTrajectory(Square(3, 5), Square(6, 2)) = listOf(Square(3, 5), Square(4, 4), Square(5, 3), Square(6, 2))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun kingTrajectory(start: Square, end: Square): List<Square> {
+    val trajectory = mutableListOf(start)
+    while (trajectory.last() != end) {
+        val current = trajectory.last()
+        trajectory.add(
+            Square(
+                current.column + (end.column - current.column).sign,
+                current.row + (end.row - current.row).sign
+            )
+        )
+    }
+    return trajectory
+}
 
 /**
  * Сложная (6 баллов)

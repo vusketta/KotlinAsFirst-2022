@@ -17,15 +17,20 @@ package lesson11.task1
  * - во всех остальных случаях следует бросить IllegalArgumentException
  */
 class DimensionalValue(value: Double, dimension: String) : Comparable<DimensionalValue> {
+    private val v = value
+    private val d = dimension
+
     /**
      * Величина с БАЗОВОЙ размерностью (например для 1.0Kg следует вернуть результат в граммах -- 1000.0)
      */
-    val value: Double get() = TODO()
+    val value: Double get() = v * prefix.multiplier
 
     /**
      * БАЗОВАЯ размерность (опять-таки для 1.0Kg следует вернуть GRAM)
      */
-    val dimension: Dimension get() = TODO()
+    val dimension: Dimension get() = if (d.last() == 'm') Dimension.METER else Dimension.GRAM
+
+    private val prefix: DimensionPrefix get() = if (d.first() == 'K') DimensionPrefix.KILO else DimensionPrefix.MILLI
 
     /**
      * Конструктор из строки. Формат строки: значение пробел размерность (1 Kg, 3 mm, 100 g и так далее).
@@ -72,6 +77,11 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
      * Сравнение на больше/меньше. Если базовая размерность разная, бросить IllegalArgumentException
      */
     override fun compareTo(other: DimensionalValue): Int = TODO()
+    override fun hashCode(): Int {
+        var result = value.hashCode()
+        result = 31 * result + dimension.hashCode()
+        return result
+    }
 }
 
 /**

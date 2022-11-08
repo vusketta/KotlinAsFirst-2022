@@ -18,6 +18,8 @@ data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 }
 
+fun midPoint(a: Point, b: Point) = Point((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
+
 /**
  * Треугольник, заданный тремя точками (a, b, c, см. constructor ниже).
  * Эти три точки хранятся в множестве points, их порядок не имеет значения.
@@ -189,7 +191,8 @@ fun lineByPoints(a: Point, b: Point): Line =
  *
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
-fun bisectorByPoints(a: Point, b: Point): Line = TODO()
+fun bisectorByPoints(a: Point, b: Point): Line =
+    Line(midPoint(a, b), (atan2(a.y - b.y, a.x - b.x) + PI / 2.0) % PI)
 
 /**
  * Средняя (3 балла)
