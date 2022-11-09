@@ -1,11 +1,10 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson8.task2
 
 import lesson2.task1.bishopMove
+import lesson9.task1.Matrix
+import lesson9.task1.createMatrix
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.roundToInt
 import kotlin.math.sign
 
 
@@ -249,13 +248,28 @@ fun knightMoveNumber(start: Square, end: Square): Int = when {
     !start.inside() || !end.inside() -> throw IllegalArgumentException()
     start == end -> 0
     else -> {
-        val rowDifference = abs(start.row - end.row)
-        val columnDifference = abs(start.column - end.column)
-        val max = listOf(
-            rowDifference / 2.0, columnDifference / 2.0, (rowDifference + columnDifference) / 3.0
-        ).max().roundToInt()
-        max + (max + rowDifference + columnDifference) % 2
+        val chessBoard = createMatrix(8, 8, Int.MAX_VALUE)
+        movesCounter(start, chessBoard)
+        chessBoard[end.row - 1, end.column - 1]
     }
+}
+
+fun nextKnightMoves(knight: Square): List<Square> =
+    listOf(
+        Square(knight.column + 1, knight.row + 2),
+        Square(knight.column - 1, knight.row + 2),
+        Square(knight.column + 1, knight.row - 2),
+        Square(knight.column - 1, knight.row - 2),
+        Square(knight.column + 2, knight.row + 1),
+        Square(knight.column - 2, knight.row + 1),
+        Square(knight.column + 2, knight.row - 1),
+        Square(knight.column - 2, knight.row - 1)
+    ).filter { it.inside() }
+
+fun movesCounter(knight: Square, chessBoard: Matrix<Int>, moveNumber: Int = 0) {
+    if (chessBoard[knight.row - 1, knight.column - 1] < moveNumber) return
+    chessBoard[knight.row - 1, knight.column - 1] = moveNumber
+    nextKnightMoves(knight).forEach { movesCounter(it, chessBoard, moveNumber + 1) }
 }
 
 /**
@@ -278,4 +292,15 @@ fun knightMoveNumber(start: Square, end: Square): Int = when {
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    val chessBoard = createMatrix(8, 8, Int.MAX_VALUE)
+    val trajectory = mutableListOf(end)
+
+    movesCounter(start, chessBoard)
+
+    while (trajectory.last() != start) {
+        trajectory.add(nextKnightMoves(trajectory.last()).minBy { chessBoard[it.row - 1, it.column - 1] })
+    }
+
+    return trajectory.reversed()
+}
