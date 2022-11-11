@@ -132,7 +132,7 @@ fun flattenPhoneNumber(phone: String): String =
  * Результаты спортсмена на соревнованиях в прыжках в длину представлены строкой вида
  * "706 - % 717 % 703".
  * В строке могут присутствовать числа, черточки - и знаки процента %, разделённые пробелами;
- * число соответствует удачному прыжку, - пропущенной попытке, % заступу.
+ * число соответствует удачному прыжку, — пропущенной попытке, % заступу.
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
@@ -179,10 +179,10 @@ fun bestHighJump(jumps: String): Int {
 fun plusMinus(expression: String): Int {
     val str = expression.replace(Regex("\\s+"), " ")
     if (!str.matches(Regex("""\d+(\s[+-]\s\d+)*"""))) throw IllegalArgumentException()
-    val list = expression.split(Regex("""\s+"""))
+    val list = str.split(" ")
     val ints = mutableListOf<Int>()
     var isNegative = false
-    list.map {
+    list.forEach {
         when (it) {
             "-" -> isNegative = true
             "+" -> {}
@@ -209,8 +209,7 @@ fun firstDuplicateIndex(str: String): Int {
     val duplicates = words.filterIndexed { i, s ->
         i in 1..words.lastIndex && s.lowercase() == words[i - 1].lowercase()
                 || i in 0 until words.lastIndex && s.lowercase() == words[i + 1].lowercase()
-    }.chunked(2)
-        .map { it.joinToString(" ") }
+    }.chunked(2).map { it.joinToString(" ") }
     return if (duplicates.isEmpty()) -1 else str.indexOf(duplicates.first())
 }
 

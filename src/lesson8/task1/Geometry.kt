@@ -126,10 +126,10 @@ fun diameter(vararg points: Point): Segment {
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle =
-    Circle(
-        midPoint(diameter.begin, diameter.end), diameter.begin.distance(diameter.end) / 2.0
-    )
+fun circleByDiameter(diameter: Segment): Circle {
+    val center = midPoint(diameter.begin, diameter.end)
+    return Circle(center, max(center.distance(diameter.begin), center.distance(diameter.end)))
+}
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
@@ -179,8 +179,16 @@ fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line =
-    Line(a, (atan2(a.y - b.y, a.x - b.x) + PI) % PI)
+fun lineByPoints(a: Point, b: Point): Line {
+    val angle = atan2(a.y - b.y, a.x - b.x)
+    return Line(
+        a, angle + when {
+            angle >= PI -> -PI
+            angle < 0 -> PI
+            else -> 0.0
+        }
+    )
+}
 
 /**
  * Сложная (5 баллов)
@@ -188,7 +196,7 @@ fun lineByPoints(a: Point, b: Point): Line =
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line =
-    Line(midPoint(a, b), (atan2(a.y - b.y, a.x - b.x) + PI / 2.0) % PI)
+    Line(midPoint(a, b), (lineByPoints(a, b).angle + PI / 2) % PI)
 
 /**
  * Средняя (3 балла)
@@ -244,8 +252,8 @@ fun minContainingCircle(vararg points: Point): Circle = when (points.size) {
     else -> {
         val diameter = diameter(*points)
         val mcc = circleByDiameter(diameter)
-        val thirdPoint = points.filter { !mcc.contains(it) }.minBy { mcc.center.distance(it) }
-        if (thirdPoint == mcc.center) mcc
-        else circleByThreePoints(diameter.end, diameter.begin, thirdPoint)
+        val thirdPoint = points.filter { !mcc.contains(it) }.maxBy { mcc.center.distance(it) }
+        if (mcc.center == thirdPoint) mcc
+        else circleByThreePoints(diameter.begin, diameter.end, thirdPoint)
     }
 }
