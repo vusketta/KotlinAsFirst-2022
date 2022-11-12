@@ -81,7 +81,7 @@ data class Circle(val center: Point, val radius: Double) {
      */
 
     fun distance(other: Circle): Double =
-        max(center.distance(other.center) - radius - other.radius, 0.0)
+        max(hypot(center.y - other.center.y, center.x - other.center.x) - (radius + other.radius), 0.0)
 
     /**
      * Тривиальная (1 балл)
