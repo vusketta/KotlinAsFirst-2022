@@ -2,7 +2,9 @@
 
 package lesson8.task1
 
+import java.lang.Integer.max
 import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Точка (гекс) на шестиугольной сетке.
@@ -64,7 +66,7 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * (расстояние между точками 32 и 24)
      */
     fun distance(other: Hexagon): Int =
-        center.distance(other.center) - radius - other.radius
+        max(center.distance(other.center) - radius - other.radius, 0)
 
     /**
      * Тривиальная (1 балл)
@@ -207,7 +209,22 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = when (directi
  *       HexPoint(y = 5, x = 3)
  *     )
  */
-fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> = TODO()
+fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
+    val path = mutableListOf(from)
+    while (path.last() != to) {
+        val current = path.last()
+        val dx = (to.x - current.x).sign
+        val dy = (to.y - current.y).sign
+        path.add(
+            when {
+                dx != 0 -> HexPoint(current.x + dx, current.y)
+                dy != 0 -> HexPoint(current.x, current.y + dy)
+                else -> to
+            }
+        )
+    }
+    return path
+}
 
 /**
  * Очень сложная (20 баллов)
@@ -224,7 +241,8 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> = TODO()
  *
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
-fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? = TODO()
+fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? =
+    if (a == b && b == c) Hexagon(a, 0) else null
 
 /**
  * Очень сложная (20 баллов)
