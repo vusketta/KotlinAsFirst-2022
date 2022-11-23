@@ -1,7 +1,6 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
-import lesson2.task2.pointInsideCircle
 import kotlin.math.*
 
 // Урок 8: простые классы
@@ -82,15 +81,14 @@ data class Circle(val center: Point, val radius: Double) {
      */
 
     fun distance(other: Circle): Double =
-        max(center.distance(other.center) - (radius + other.radius), 0.0)
+        max(hypot(center.y - other.center.y, center.x - other.center.x) - (radius + other.radius), 0.0)
 
     /**
      * Тривиальная (1 балл)
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean =
-        pointInsideCircle(p.x, p.y, center.x, center.y, radius)
+    fun contains(p: Point): Boolean = center.distance(p) <= radius
 }
 
 /**
@@ -130,7 +128,7 @@ fun diameter(vararg points: Point): Segment {
  */
 fun circleByDiameter(diameter: Segment): Circle {
     val center = midPoint(diameter.begin, diameter.end)
-    return Circle(center, center.distance(diameter.begin))
+    return Circle(center, max(center.distance(diameter.begin), center.distance(diameter.end)))
 }
 
 /**
@@ -248,16 +246,14 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-
 fun minContainingCircle(vararg points: Point): Circle = when (points.size) {
     0 -> throw IllegalArgumentException()
     1 -> Circle(points.first(), 0.0)
-    2 -> circleByDiameter(Segment(points[0], points[1]))
     else -> {
         val diameter = diameter(*points)
         val mcc = circleByDiameter(diameter)
-        val thirdPoint = points.filter { !mcc.contains(it) }.maxByOrNull { mcc.center.distance(it) }
-        if (thirdPoint == null) mcc
+        val thirdPoint = points.filter { !mcc.contains(it) }.maxBy { mcc.center.distance(it) }
+        if (mcc.center == thirdPoint) mcc
         else circleByThreePoints(diameter.begin, diameter.end, thirdPoint)
     }
 }

@@ -564,26 +564,25 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
     val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
     File(outputName).bufferedWriter().use { out ->
-        out.write("$lhv".padEnd(lineLength - lhvLength + 1, ' '))
+        out.write("$lhv".padStart(lineLength, ' '))
         out.newLine()
-        out.write("*" + "$rhv".padStart(lineLength - rhvLength - 1, ' '))
+        out.write("*" + "$rhv".padStart(lineLength - 1, ' '))
         out.newLine()
         out.write("-".repeat(lineLength))
         out.newLine()
-        out.write(" ".repeat(lineLength - digitNumber(factors.last())) + factors.last())
+        out.write("${factors.last()}".padStart(lineLength, ' '))
         out.newLine()
         factors.indices.forEach { i ->
             if (i != 0) {
                 out.write(
-                    "+" + " ".repeat(lineLength - digitNumber(factors[factors.lastIndex - i]) - i - 1)
-                            + factors[factors.lastIndex - i]
+                    "+" + "${factors[factors.lastIndex - i]}".padStart(lineLength - i - 1, ' ')
                 )
                 out.newLine()
             }
         }
         out.write("-".repeat(lineLength))
         out.newLine()
-        out.write(" ".repeat(lineLength - digitNumber(product)) + product)
+        out.write("$product".padStart(lineLength, ' '))
     }
 }
 

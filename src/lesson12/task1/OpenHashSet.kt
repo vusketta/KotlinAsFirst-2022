@@ -17,6 +17,8 @@ package lesson12.task1
  */
 class OpenHashSet<T>(val capacity: Int) {
 
+    private var _size = 0
+
     /**
      * Массив для хранения элементов хеш-таблицы
      */
@@ -25,12 +27,22 @@ class OpenHashSet<T>(val capacity: Int) {
     /**
      * Число элементов в хеш-таблице
      */
-    val size: Int get() = TODO()
+    val size: Int get() = _size
 
     /**
      * Признак пустоты
      */
     fun isEmpty(): Boolean = size == 0
+
+    /**
+     * Хеш-функция
+     */
+    fun hash(element: T): Int = element.hashCode()
+
+    /**
+     * Получение индекса ячейки хеш-таблицы методом линейного пробирования
+     */
+    fun index(element: T): Int = TODO()
 
     /**
      * Добавление элемента.
@@ -48,5 +60,13 @@ class OpenHashSet<T>(val capacity: Int) {
      * Таблицы равны, если в них одинаковое количество элементов,
      * и любой элемент из второй таблицы входит также и в первую
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean =
+        other is OpenHashSet<*> && elements.contentEquals(other.elements)
+
+    override fun hashCode(): Int {
+        var result = capacity
+        result = 31 * result + _size
+        result = 31 * result + elements.contentHashCode()
+        return result
+    }
 }

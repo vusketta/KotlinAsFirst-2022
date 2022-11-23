@@ -80,12 +80,10 @@ val monthString = listOf(
 )
 
 fun dateStrToDigit(str: String): String {
-    if (!str.matches(Regex("""\d* [а-я]* \d*"""))) return ""
+    if (!str.matches(Regex("""\d+ [а-я]+ \d+"""))) return ""
     val date = str.split(" ")
-    if (!monthString.contains(date[1]) || daysInMonth(
-            monthString.indexOf(date[1]) + 1,
-            date[2].toInt()
-        ) < date[0].toInt()
+    if (!monthString.contains(date[1]) ||
+        daysInMonth(monthString.indexOf(date[1]) + 1, date[2].toInt()) < date[0].toInt()
     ) return ""
     return String.format("%02d.%02d.%d", date[0].toInt(), monthString.indexOf(date[1]) + 1, date[2].toInt())
 }
