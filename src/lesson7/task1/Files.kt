@@ -1,9 +1,8 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
-
 package lesson7.task1
 
 import lesson3.task1.digitNumber
-import lesson4.task1.pow
+import lesson4.task1.convert
+import java.io.BufferedWriter
 import java.io.File
 
 // Урок 7: работа с файлами
@@ -64,15 +63,16 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Все остальные строки должны быть перенесены без изменений, включая пустые строки.
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
+fun BufferedWriter.writeLn(line: String) {
+    write(line)
+    newLine()
+}
+
 fun deleteMarked(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use { out ->
         File(inputName).forEachLine { line ->
-            when {
-                line.isEmpty() -> out.newLine()
-                !line.startsWith("_") -> {
-                    out.write(line)
-                    out.newLine()
-                }
+            if (!line.startsWith("_")) {
+                out.writeLn(line)
             }
         }
     }
@@ -158,8 +158,7 @@ fun centerFile(inputName: String, outputName: String) {
             val maxLength = lines.maxOf { it.trim().length }
             lines.forEach {
                 out.write(" ".repeat((maxLength - it.trim().length) / 2))
-                out.write(it.trim())
-                out.newLine()
+                out.writeLn(it.trim())
             }
         }
     }
@@ -201,17 +200,16 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             lines.forEach { line ->
                 val words = line.split(Regex("""\s+""")).toMutableList()
                 when {
-                    words.size == 1 -> out.write(line)
+                    words.size == 1 -> out.writeLn(line)
                     line.isNotBlank() -> {
                         val spaces = (maxLength - line.length) / words.lastIndex + 1
                         val remain = (maxLength - line.length) % words.lastIndex
                         for (i in 0 until words.lastIndex) {
                             words[i] += " ".repeat(if (i < remain) spaces + 1 else spaces)
                         }
-                        out.write(words.joinToString(""))
+                        out.writeLn(words.joinToString(""))
                     }
                 }
-                out.newLine()
             }
         }
     }
@@ -560,29 +558,21 @@ fun markdownToHtml(inputName: String, outputName: String) {
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val lhvLength = digitNumber(lhv)
     val rhvLength = digitNumber(rhv)
-    val factors = rhv.toString().map { d -> lhv * (d - '0') }
-    val product = factors.mapIndexed { i, d -> d * pow(10, rhvLength - i - 1) }.sum()
-    val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product), factors.maxOf { digitNumber(it) }) + 1
+    val factors = convert(rhv, 10).map { lhv * it }
+    val product = lhv * rhv
+    val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product)) + 1
     File(outputName).bufferedWriter().use { out ->
-        out.write("$lhv".padStart(lineLength, ' '))
-        out.newLine()
-        out.write("*" + "$rhv".padStart(lineLength - 1, ' '))
-        out.newLine()
-        out.write("-".repeat(lineLength))
-        out.newLine()
-        out.write("${factors.last()}".padStart(lineLength, ' '))
-        out.newLine()
-        factors.indices.forEach { i ->
-            if (i != 0) {
-                out.write(
-                    "+" + "${factors[factors.lastIndex - i]}".padStart(lineLength - i - 1, ' ')
-                )
-                out.newLine()
-            }
+        out.writeLn("$lhv".padStart(lineLength))
+        out.writeLn("*" + "$rhv".padStart(lineLength - 1))
+        out.writeLn("-".repeat(lineLength))
+        out.writeLn("${factors.last()}".padStart(lineLength))
+        (1..factors.lastIndex).forEach { i ->
+            out.writeLn(
+                "+" + "${factors[factors.lastIndex - i]}".padStart(lineLength - i - 1)
+            )
         }
-        out.write("-".repeat(lineLength))
-        out.newLine()
-        out.write("$product".padStart(lineLength, ' '))
+        out.writeLn("-".repeat(lineLength))
+        out.write("$product".padStart(lineLength))
     }
 }
 
