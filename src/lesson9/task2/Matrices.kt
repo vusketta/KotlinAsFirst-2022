@@ -193,9 +193,9 @@ fun <E> getColumn(matrix: Matrix<E>, column: Int) = List(matrix.height) { matrix
 fun isLatinSquare(matrix: Matrix<Int>): Boolean {
     if (matrix.height != matrix.width) return false
     for (i in 0 until matrix.height)
-        if (!getRow(matrix, i).containsAll((1..matrix.height).toList())) return false
+        if (!getRow(matrix, i).toSet().containsAll((1..matrix.height).toSet())) return false
     for (i in 0 until matrix.width)
-        if (!getColumn(matrix, i).containsAll((1..matrix.width).toList())) return false
+        if (!getColumn(matrix, i).toSet().containsAll((1..matrix.width).toSet())) return false
     return true
 }
 

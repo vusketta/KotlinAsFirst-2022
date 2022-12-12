@@ -193,24 +193,23 @@ fun centerFile(inputName: String, outputName: String) {
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use { out ->
-        val lines = File(inputName).readLines().map { it.trim() }
-        if (lines.isEmpty()) out.write("")
-        else {
-            val maxLength = lines.maxOf { it.length }
-            lines.forEach { line ->
-                val words = line.split(Regex("""\s+""")).toMutableList()
-                when {
-                    words.size == 1 -> out.writeLn(line)
-                    line.isNotBlank() -> {
-                        val spaces = (maxLength - line.length) / words.lastIndex + 1
-                        val remain = (maxLength - line.length) % words.lastIndex
-                        for (i in 0 until words.lastIndex) {
-                            words[i] += " ".repeat(if (i < remain) spaces + 1 else spaces)
-                        }
-                        out.writeLn(words.joinToString(""))
-                    }
-                }
+        val lines = File(inputName).readLines().map {
+            it.trim().replace(Regex("""\s+"""), " ")
+        }
+        if (lines.isEmpty()) return
+        val maxLength = lines.maxOf { it.length }
+        lines.forEach { line ->
+            val words = line.split(" ")
+            var spaces = maxLength - words.sumOf { it.length }
+            for (i in 0 until words.lastIndex) {
+                var space = (spaces / (words.size - 1 - i))
+                if (spaces % (words.size - 1 - i) != 0) space += 1
+                out.write(words[i])
+                out.write(" ".repeat(space))
+                spaces -= space
             }
+            out.write(words.last())
+            out.newLine()
         }
     }
 }
@@ -497,24 +496,6 @@ fun String.parseMarkdownSimple(): String {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать необязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val lines = File(inputName).readLines()
-    var prevSpaces = 0
-    val sb = StringBuilder("<html><body><p>")
-    lines.forEach {
-        val char = it.first { c -> !c.isWhitespace() }
-        val currSpaces = it.indexOf(char)
-        when {
-            prevSpaces == currSpaces ->
-                sb.append("<li>${it.substring(currSpaces)}</li>")
-
-            prevSpaces < currSpaces -> {}
-        }
-        prevSpaces = currSpaces
-    }
-    sb.append("</p></body></html>")
-    File(outputName).bufferedWriter().use { out ->
-        out.write(sb.toString())
-    }
     TODO()
 }
 

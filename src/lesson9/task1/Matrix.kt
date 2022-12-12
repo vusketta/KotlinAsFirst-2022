@@ -49,14 +49,14 @@ inline fun <E> Matrix<E>.forEach(action: (Pair<Int, Int>, E) -> Unit) {
 }
 
 inline fun <T, R> Matrix<T>.map(transform: (T) -> R): Matrix<R> {
-    val mapped = createMatrix(this.height, this.width, transform(this[0, 0]))
-    this.forEach { (first, second), i -> mapped[first, second] = transform(i) }
+    val mapped = createMatrix(height, width, transform(this[0, 0]))
+    forEach { (first, second), i -> mapped[first, second] = transform(i) }
     return mapped
 }
 
 fun Matrix<Int>.sum(): Int {
     var sum = 0
-    this.forEach { _, i -> sum += i }
+    forEach { _, i -> sum += i }
     return sum
 }
 
@@ -70,7 +70,7 @@ fun <E> Matrix<E>.indicesOf(element: E): Pair<Int, Int> {
 }
 
 fun <E> Matrix<E>.copy(): Matrix<E> {
-    val copy = createMatrix(this.height, this.width, this[0, 0])
+    val copy = createMatrix(height, width, this[0, 0])
     copy.forEach { (first, second), _ -> copy[first, second] = this[first, second] }
     return copy
 }
