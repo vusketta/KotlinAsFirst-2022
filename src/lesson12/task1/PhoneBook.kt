@@ -75,7 +75,7 @@ class PhoneBook {
      * Вернуть все номера телефона заданного человека.
      * Если этого человека нет в книге, вернуть пустой список
      */
-    fun phones(name: String): Set<String> = people[name]!!
+    fun phones(name: String): Set<String> = people[name] ?: emptySet()
 
     /**
      * Вернуть имя человека по заданному номеру телефона.

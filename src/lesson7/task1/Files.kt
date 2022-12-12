@@ -208,8 +208,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                 out.write(" ".repeat(space))
                 spaces -= space
             }
-            out.write(words.last())
-            out.newLine()
+            out.writeLn(words.last())
         }
     }
 }

@@ -95,6 +95,8 @@ data class Circle(val center: Point, val radius: Double) {
  * Отрезок между двумя точками
  */
 data class Segment(val begin: Point, val end: Point) {
+    val length: Double get() = begin.distance(end)
+
     override fun equals(other: Any?) =
         other is Segment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
 
@@ -126,10 +128,8 @@ fun diameter(vararg points: Point): Segment {
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle {
-    val center = midPoint(diameter.begin, diameter.end)
-    return Circle(center, max(center.distance(diameter.begin), center.distance(diameter.end)))
-}
+fun circleByDiameter(diameter: Segment): Circle =
+    Circle(midPoint(diameter.begin, diameter.end), diameter.length / 2)
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
