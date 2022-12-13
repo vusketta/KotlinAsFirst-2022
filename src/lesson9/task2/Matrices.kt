@@ -2,8 +2,10 @@
 
 package lesson9.task2
 
-import lesson9.task1.*
-import java.util.*
+import lesson9.task1.Matrix
+import lesson9.task1.createMatrix
+import lesson9.task1.forEach
+import lesson9.task1.indicesOf
 import kotlin.math.abs
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
@@ -224,8 +226,8 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
 
 fun Matrix<Int>.neighbourSum(i: Int, j: Int): Int {
     val neighbours = listOf(
-        i - 1 to j - 1, i - 1 to j, i - 1 to j + 1, i to j - 1, i to j + 1,
-        i + 1 to j - 1, i + 1 to j, i + 1 to j + 1
+        i - 1 to j - 1, i - 1 to j, i - 1 to j + 1, i to j - 1,
+        i to j + 1, i + 1 to j - 1, i + 1 to j, i + 1 to j + 1
     )
     var sum = 0
     for ((first, second) in neighbours) {
@@ -251,8 +253,8 @@ fun Matrix<Int>.neighbourSum(i: Int, j: Int): Int {
  * 0 0 0 0
  */
 fun findHoles(matrix: Matrix<Int>): Holes {
-    val rows: MutableList<Int> = mutableListOf()
-    val columns: MutableList<Int> = mutableListOf()
+    val rows = mutableListOf<Int>()
+    val columns = mutableListOf<Int>()
     for (i in 0 until matrix.height)
         if (!getRow(matrix, i).contains(1)) rows.add(i)
     for (i in 0 until matrix.width)
@@ -283,9 +285,8 @@ fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
     for (i in 1 until matrix.width) matrix[0, i] += matrix[0, i - 1]
     for (i in 1 until matrix.height) matrix[i, 0] += matrix[i - 1, 0]
     matrix.forEach { (i, j), _ ->
-        if (0 < i && i < matrix.height &&
-            0 < j && j < matrix.width
-        ) matrix[i, j] += matrix[i - 1, j] + matrix[i, j - 1] - matrix[i - 1, j - 1]
+        if (i in 1 until matrix.height && j in 1 until matrix.width)
+            matrix[i, j] += matrix[i - 1, j] + matrix[i, j - 1] - matrix[i - 1, j - 1]
     }
     return matrix
 }
@@ -314,11 +315,11 @@ operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
  * Подробно про порядок умножения см. статью Википедии "Умножение матриц".
  */
 operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
-    if (this.width != other.height) throw IllegalArgumentException()
-    val result = createMatrix(this.height, other.width, 0)
-    for (i in 0 until this.height) {
+    if (width != other.height) throw IllegalArgumentException()
+    val result = createMatrix(height, other.width, 0)
+    for (i in 0 until height) {
         for (j in 0 until other.width) {
-            for (k in 0 until this.width) {
+            for (k in 0 until width) {
                 result[i, j] += this[i, k] * other[k, j]
             }
         }
@@ -351,7 +352,7 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
         for (colShift in 0..lock.width - key.width) {
             loop@ for (i in 0 until key.height) {
                 for (j in 0 until key.width) {
-                    if (lock[i + rowShift, j + colShift] == 1 && key[i, j] != 0) {
+                    if (lock[i + rowShift, j + colShift] + key[i, j] != 1) {
                         break@loop
                     }
                     if (i == key.height - 1 && j == key.width - 1) return Triple(true, rowShift, colShift)

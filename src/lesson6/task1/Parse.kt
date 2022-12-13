@@ -143,7 +143,6 @@ fun bestLongJump(jumps: String): Int =
         .map { it.toInt() }
         .maxOfOrNull { it } ?: -1
 
-
 /**
  * Сложная (6 баллов)
  *
@@ -239,6 +238,7 @@ fun mostExpensive(description: String): String =
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
+
 val romanToArabic = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
 
 fun fromRoman(roman: String): Int {
@@ -334,8 +334,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 i--
                 counter--
             }
-
-            else -> {}
         }
         if (j !in 0 until cells) throw IllegalStateException()
         if (limit < ++counter || ++i >= commands.length) return conveyor
