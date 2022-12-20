@@ -63,16 +63,12 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Все остальные строки должны быть перенесены без изменений, включая пустые строки.
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
-fun BufferedWriter.writeLn(line: String) {
-    write(line)
-    newLine()
-}
 
 fun deleteMarked(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use { out ->
         File(inputName).forEachLine { line ->
             if (!line.startsWith("_")) {
-                out.writeLn(line)
+                out.appendLine(line)
             }
         }
     }
@@ -158,7 +154,7 @@ fun centerFile(inputName: String, outputName: String) {
             val maxLength = lines.maxOf { it.trim().length }
             lines.forEach {
                 out.write(" ".repeat((maxLength - it.trim().length) / 2))
-                out.writeLn(it.trim())
+                out.appendLine(it.trim())
             }
         }
     }
@@ -208,7 +204,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                 out.write(" ".repeat(space))
                 spaces -= space
             }
-            out.writeLn(words.last())
+            out.appendLine(words.last())
         }
     }
 }
@@ -234,7 +230,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  *
  */
 fun top20Words(inputName: String): Map<String, Int> {
-    val frequencies = Regex("""[a-zA-Zа-яёА-ЯЁ]+""").findAll(File(inputName).readText().lowercase())
+    val frequencies = Regex("""[a-zа-яё]+""").findAll(File(inputName).readText().lowercase())
         .map { it.value }.groupBy { it }.map { it.key to it.value.count() }
         .sortedByDescending { (_, v) -> v }.toMap()
     return if (frequencies.size < 21) frequencies else
@@ -542,16 +538,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val product = lhv * rhv
     val lineLength = maxOf(lhvLength, rhvLength, digitNumber(product)) + 1
     File(outputName).bufferedWriter().use { out ->
-        out.writeLn("$lhv".padStart(lineLength))
-        out.writeLn("*" + "$rhv".padStart(lineLength - 1))
-        out.writeLn("-".repeat(lineLength))
-        out.writeLn("${factors.last()}".padStart(lineLength))
+        out.appendLine("$lhv".padStart(lineLength))
+        out.appendLine("*" + "$rhv".padStart(lineLength - 1))
+        out.appendLine("-".repeat(lineLength))
+        out.appendLine("${factors.last()}".padStart(lineLength))
         (1..factors.lastIndex).forEach { i ->
-            out.writeLn(
+            out.appendLine(
                 "+" + "${factors[factors.lastIndex - i]}".padStart(lineLength - i - 1)
             )
         }
-        out.writeLn("-".repeat(lineLength))
+        out.appendLine("-".repeat(lineLength))
         out.write("$product".padStart(lineLength))
     }
 }

@@ -54,8 +54,8 @@ class Polynom(vararg coeffs: Double) {
      * Сложение
      */
     operator fun plus(other: Polynom): Polynom = Polynom(
-        *DoubleArray(maxOf(this.data.size, other.data.size)) {
-            this.data.getOrElse(it) { 0.0 } + other.data.getOrElse(it) { 0.0 }
+        *DoubleArray(maxOf(data.size, other.data.size)) {
+            data.getOrElse(it) { 0.0 } + other.data.getOrElse(it) { 0.0 }
         }.reversedArray()
     )
 
@@ -63,13 +63,13 @@ class Polynom(vararg coeffs: Double) {
      * Смена знака (при всех слагаемых)
      */
     operator fun unaryMinus(): Polynom = Polynom(
-        *DoubleArray(this.data.size) { -this.data[it] }.reversedArray()
+        *DoubleArray(data.size) { -data[it] }.reversedArray()
     )
 
     /**
      * Вычитание
      */
-    operator fun minus(other: Polynom): Polynom = this.plus(other.unaryMinus())
+    operator fun minus(other: Polynom): Polynom =plus(other.unaryMinus())
 
     /**
      * Умножение
